@@ -19,9 +19,7 @@ public class VeiculoController {
 
     // Criar veículo
     @PostMapping
-    public ResponseEntity<Void> criarVeiculo(
-            @RequestBody VeiculoRequestDTO request) {
-
+    public ResponseEntity<Void> criarVeiculo(@RequestBody VeiculoRequestDTO request) {
         veiculoService.criarVeiculo(request);
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
