@@ -20,4 +20,5 @@ public class OrdemCarregamentoRequestDTO {
     private LocalDate dataEntrega;
     private String motorista;
     private String placaVeiculo;
+    private Long idUsuario;
 }

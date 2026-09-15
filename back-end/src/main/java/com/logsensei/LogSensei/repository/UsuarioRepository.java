@@ -8,4 +8,7 @@ import java.util.Optional;
 public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
     // Função para localizar o usuario pelo nome
     Optional<Usuario> findByNomeUsuario(String nomeUsuario);
+
+    // Função para localizar o usuario pelo id
+    Optional<Usuario> findById(Long id);
 }

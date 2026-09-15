@@ -21,7 +21,7 @@ public class Item {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idProdutos;
+    private Long idItem;
 
     @NotNull
     private Long quantidade;

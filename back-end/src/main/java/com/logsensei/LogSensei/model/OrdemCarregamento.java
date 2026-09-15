@@ -2,8 +2,10 @@ package com.logsensei.LogSensei.model;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -40,8 +42,12 @@ public class OrdemCarregamento {
     @NotBlank 
     private String vencimento;
 
-    @OneToMany(mappedBy = "ordemCarregamento")
-    private List<Item> item;
+    @OneToMany(
+        mappedBy = "ordemCarregamento",
+        cascade = CascadeType.ALL,
+        orphanRemoval = true
+    )
+    private List<Item> item = new ArrayList<>();
 
     private String observacao;
 
