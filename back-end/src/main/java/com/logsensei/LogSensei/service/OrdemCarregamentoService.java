@@ -7,12 +7,14 @@ import com.logsensei.LogSensei.dto.item.ItemRequestDTO;
 import com.logsensei.LogSensei.model.OrdemCarregamento;
 import com.logsensei.LogSensei.model.Item;
 import com.logsensei.LogSensei.model.Produto;
+import com.logsensei.LogSensei.model.Carga;
 
 import com.logsensei.LogSensei.repository.OrdemCarregamentoRepository;
 import com.logsensei.LogSensei.repository.ClienteRepository;
 import com.logsensei.LogSensei.repository.VeiculoRepository;
 import com.logsensei.LogSensei.repository.UsuarioRepository;
 import com.logsensei.LogSensei.repository.ProdutoRepository;
+import com.logsensei.LogSensei.repository.CargaRepository;
 
 import java.time.LocalDateTime;
 
@@ -28,18 +30,22 @@ public class OrdemCarregamentoService {
 
     private final ProdutoRepository produtoRepository;
 
+    private final CargaRepository cargaRepository;
+
     public OrdemCarregamentoService(
             OrdemCarregamentoRepository ordemCarregamentoRepository,
             ClienteRepository clienteRepository,
             VeiculoRepository veiculoRepository,
             UsuarioRepository usuarioRepository,
-            ProdutoRepository produtoRepository) {
+            ProdutoRepository produtoRepository,
+            CargaRepository cargaRepository) {
 
         this.ordemCarregamentoRepository = ordemCarregamentoRepository;
         this.clienteRepository = clienteRepository;
         this.veiculoRepository = veiculoRepository;
         this.usuarioRepository = usuarioRepository;
         this.produtoRepository = produtoRepository;
+        this.cargaRepository = cargaRepository;
     }
 
     // Criar ordem de carregamento
@@ -65,7 +71,7 @@ public class OrdemCarregamentoService {
             // Coloco as informações dos itens
             item.setQuantidade(itemRequest.getQuantidade());
             item.setValorUnitario(itemRequest.getValorUnitario());
-            
+
             // Verifico se não foi passado um produto que não existe
             if (produtoRepository.findByCodigoProduto(itemRequest.getCodigoProduto()).isEmpty()) {
                 throw new RuntimeException("Produto não encontrado");
@@ -76,13 +82,35 @@ public class OrdemCarregamentoService {
 
             // Coloco o produto no item
             item.setProduto(produto);
-            
+
             // Conecto com a ordem de carregamento
             item.setOrdemCarregamento(ordemCarregamento);
 
             // Adiciono na lista o produto
             ordemCarregamento.getItem().add(item);
         }
+
+        // Calculo o peso total da carga
+        Double pesoTotal = 0.0;
+
+        for (Item item : ordemCarregamento.getItem()) {
+            pesoTotal += item.getProduto().getPesoProduto() * item.getQuantidade();
+        }
+
+        // Criação da carga
+        Carga carga = new Carga();
+
+        // Calculo o aproveitamento do veiculo
+        Double aproveitamento = (pesoTotal / ordemCarregamento.getVeiculo().getCapacidadeVeiculo()) * 100;
+
+        // Coloco os dados inicias da carga
+        carga.setStatus("PENDENTE");
+        carga.setPesoTotal(pesoTotal);
+        carga.setAproveitamento(aproveitamento);
+        carga.setOrdemCarregamento(ordemCarregamento);
+
+        // Salvo a carga
+        cargaRepository.save(carga);
 
         // Salvo a ordem de carregamento
         ordemCarregamentoRepository.save(ordemCarregamento);

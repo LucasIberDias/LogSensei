@@ -24,12 +24,12 @@ public class Carga {
     private Long idCarga;
 
     private String localSaida;
- 
+
     private String transportadora;
 
     private String notaFiscal;
 
-    @NotBlank 
+    @NotBlank
     private String status;
 
     @NotNull
@@ -39,6 +39,6 @@ public class Carga {
     private Double aproveitamento;
 
     @NotNull
-    @OneToOne 
+    @OneToOne
     private OrdemCarregamento ordemCarregamento;
 }
