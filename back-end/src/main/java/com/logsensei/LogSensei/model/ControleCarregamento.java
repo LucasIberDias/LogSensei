@@ -42,8 +42,6 @@ public class ControleCarregamento {
 
     private String entregaDireto;
 
-    private String status;
-
     @NotNull
     @OneToOne  
     private Carga carga;
