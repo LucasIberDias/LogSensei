@@ -1,19 +1,40 @@
 import { Box, Typography } from "@mui/material";
 
+import Header from "../../components/Header/Header";
+import Sidebar from "../../components/Sidebar/Sidebar";
+
 function Dashboard() {
 
     const nomeUsuario = localStorage.getItem("nomeUsuario");
 
     return (
-        <Box sx={{ padding: 4 }}>
+        <Box>
 
-            <Typography variant="h4">
-                Dashboard
-            </Typography>
+            <Header />
 
-            <Typography variant="body1">
-                Bem-vindo, {nomeUsuario}!
-            </Typography>
+            <Sidebar />
+
+            <Box
+                component="main"
+                sx={{
+                    marginLeft: "240px",
+                    padding: 4,
+                    paddingTop: 10,
+                }}
+            >
+
+                <Typography variant="h4">
+                    Dashboard
+                </Typography>
+
+                <Typography
+                    variant="body1"
+                    sx={{ marginTop: 2 }}
+                >
+                    Bem-vindo, {nomeUsuario}!
+                </Typography>
+
+            </Box>
 
         </Box>
     );

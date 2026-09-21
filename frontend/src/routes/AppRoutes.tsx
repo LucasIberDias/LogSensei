@@ -8,6 +8,7 @@ import {
 import Login from "../pages/Login/Login";
 import Dashboard from "../pages/Dashboard/Dashboard";
 
+
 function AppRoutes() {
 
     const token = localStorage.getItem("token");
@@ -30,7 +31,6 @@ function AppRoutes() {
                             : <Navigate to="/login" />
                     }
                 />
-
             </Routes>
 
         </BrowserRouter>
