@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*;
 
 import com.logsensei.LogSensei.dto.produto.ProdutoRequestDTO;
 import com.logsensei.LogSensei.service.ProdutoService;
+import com.logsensei.LogSensei.model.Produto;
 
 @RestController
 @RequestMapping("/produto")
@@ -23,5 +24,12 @@ public class ProdutoController {
         produtoService.criarProduto(request);
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    // Buscar produto pelo codigo
+    @GetMapping("/codigo/{codigoProduto}")
+    public ResponseEntity<Produto> buscarPorCodigo(@PathVariable Long codigoProduto) {
+
+        return ResponseEntity.ok(produtoService.buscarProduto(codigoProduto));
     }
 }

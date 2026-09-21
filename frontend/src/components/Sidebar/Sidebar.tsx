@@ -7,8 +7,6 @@ import {
 } from "@mui/material";
 
 import DashboardIcon from "@mui/icons-material/Dashboard";
-import LocalShippingIcon from "@mui/icons-material/LocalShipping";
-import DirectionsCarIcon from "@mui/icons-material/DirectionsCar";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 
 import { useNavigate } from "react-router-dom";
@@ -32,7 +30,9 @@ function Sidebar() {
 
             <List>
 
-                <ListItemButton onClick={() => navigate("/")}>
+                <ListItemButton
+                    onClick={() => navigate("/")}
+                >
                     <ListItemIcon>
                         <DashboardIcon />
                     </ListItemIcon>
@@ -40,32 +40,14 @@ function Sidebar() {
                     <ListItemText primary="Dashboard" />
                 </ListItemButton>
 
-                <ListItemButton onClick={() => navigate("/cargas")}>
-                    <ListItemIcon>
-                        <LocalShippingIcon />
-                    </ListItemIcon>
-
-                    <ListItemText primary="Cargas" />
-                </ListItemButton>
-
-                <ListItemButton onClick={() => navigate("/veiculos")}>
-                    <ListItemIcon>
-                        <DirectionsCarIcon />
-                    </ListItemIcon>
-
-                    <ListItemText primary="Veículos" />
-                </ListItemButton>
-
                 <ListItemButton
-                    onClick={() => navigate("/controle-carregamento")}
+                    onClick={() => navigate("/ordem")}
                 >
                     <ListItemIcon>
                         <AssignmentIcon />
                     </ListItemIcon>
 
-                    <ListItemText
-                        primary="Controle de Carregamento"
-                    />
+                    <ListItemText primary="Ordem" />
                 </ListItemButton>
 
             </List>

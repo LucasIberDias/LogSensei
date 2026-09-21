@@ -10,7 +10,6 @@ import com.logsensei.LogSensei.service.OrdemCarregamentoService;
 @RestController
 @RequestMapping("/ordemCarregamento")
 public class OrdemCarregamentoController {
-
     private final OrdemCarregamentoService ordemCarregamentoService;
 
     public OrdemCarregamentoController(OrdemCarregamentoService ordemCarregamentoService) {

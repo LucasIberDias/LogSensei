@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.*;
 import com.logsensei.LogSensei.dto.cliente.ClienteRequestDTO;
 import com.logsensei.LogSensei.service.ClienteService;
 
+import com.logsensei.LogSensei.model.Cliente;
+
 @RestController
 @RequestMapping("/cliente")
 public class ClienteController {
@@ -23,5 +25,12 @@ public class ClienteController {
         clienteService.criarCliente(request);
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    // Buscar cliente
+    @GetMapping("/codigo/{codigoCliente}")
+    public ResponseEntity<Cliente> buscarPorCodigo(@PathVariable Long codigoCliente) {
+
+        return ResponseEntity.ok(clienteService.buscarCliente(codigoCliente));
     }
 }

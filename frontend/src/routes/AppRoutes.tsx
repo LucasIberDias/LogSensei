@@ -7,13 +7,14 @@ import {
 
 import Login from "../pages/Login/Login";
 import Dashboard from "../pages/Dashboard/Dashboard";
-
+import Ordem from "../pages/Ordem/Ordem";
 
 function AppRoutes() {
 
     const token = localStorage.getItem("token");
 
     return (
+
         <BrowserRouter>
 
             <Routes>
@@ -31,6 +32,16 @@ function AppRoutes() {
                             : <Navigate to="/login" />
                     }
                 />
+
+                <Route
+                    path="/ordem"
+                    element={
+                        token
+                            ? <Ordem />
+                            : <Navigate to="/login" />
+                    }
+                />
+
             </Routes>
 
         </BrowserRouter>

@@ -30,12 +30,19 @@ public class ClienteService {
             throw new RuntimeException("Já existe um cliente com esse nome.");
         }
 
-        // Verific se o codigo nao foi usado
+        // Verifica se o codigo nao foi usado
         if (clienteRepository.findByCodigoCliente(cliente.getCodigoCliente()).isPresent()) {
             throw new RuntimeException("Código passado já está em uso.");
         }
 
         // Salvo o cliente
         clienteRepository.save(cliente);
+    }
+
+    // Busca cliente pelo codigo
+    public Cliente buscarCliente(Long codigoCliente){
+        return clienteRepository.findByCodigoCliente(codigoCliente).orElseThrow(() ->
+            new RuntimeException("Cliente não possui cadastro")
+        );
     }
 }
