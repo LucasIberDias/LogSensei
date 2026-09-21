@@ -3,11 +3,11 @@ package com.logsensei.LogSensei.service;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.logsensei.LogSensei.config.JwtService;
 import com.logsensei.LogSensei.dto.login.LoginRequestDTO;
 import com.logsensei.LogSensei.dto.login.LoginResponseDTO;
 import com.logsensei.LogSensei.model.Usuario;
 import com.logsensei.LogSensei.repository.UsuarioRepository;
-import com.logsensei.LogSensei.security.JwtService;
 
 @Service
 public class AuthService {

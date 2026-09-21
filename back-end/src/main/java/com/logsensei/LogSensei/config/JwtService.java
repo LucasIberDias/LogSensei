@@ -1,4 +1,4 @@
-package com.logsensei.LogSensei.security;
+package com.logsensei.LogSensei.config;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Date;

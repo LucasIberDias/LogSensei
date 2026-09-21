@@ -1,16 +1,21 @@
 package com.logsensei.LogSensei.config;
 
+import java.util.List;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
-import com.logsensei.LogSensei.security.JwtAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
+@EnableWebSecurity
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
@@ -23,37 +28,69 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http
-
-            // Desativa CSRF para a API
             .csrf(csrf -> csrf.disable())
 
-            // Não usa sessão no servidor
+            .cors(cors -> {})
+
             .sessionManagement(session ->
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             )
 
-            // Define quais rotas precisam de login
             .authorizeHttpRequests(auth -> auth
 
-                // Login pode ser acessado sem token
-                .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
+                // Tudo relacionado ao login fica público
+                .requestMatchers("/auth/**").permitAll()
 
-                // Todas as outras rotas precisam de autenticação
+                // Permite o preflight do navegador
+                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+
+                // O restante exige JWT
                 .anyRequest().authenticated()
             )
 
-            // Desativa login padrão do Spring
             .formLogin(form -> form.disable())
-
-            // Desativa autenticação Basic
             .httpBasic(basic -> basic.disable())
 
-            // Coloca nosso filtro JWT antes do filtro padrão
             .addFilterBefore(
                 jwtAuthenticationFilter,
                 UsernamePasswordAuthenticationFilter.class
             );
 
         return http.build();
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+
+        CorsConfiguration configuration = new CorsConfiguration();
+
+        configuration.setAllowedOrigins(
+            List.of("http://localhost:5173")
+        );
+
+        configuration.setAllowedMethods(
+            List.of(
+                "GET",
+                "POST",
+                "PUT",
+                "PATCH",
+                "DELETE",
+                "OPTIONS"
+            )
+        );
+
+        configuration.setAllowedHeaders(
+            List.of("*")
+        );
+
+        UrlBasedCorsConfigurationSource source =
+            new UrlBasedCorsConfigurationSource();
+
+        source.registerCorsConfiguration(
+            "/**",
+            configuration
+        );
+
+        return source;
     }
 }
