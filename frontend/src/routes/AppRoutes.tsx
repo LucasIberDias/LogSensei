@@ -8,6 +8,7 @@ import {
 import Login from "../pages/Login/Login";
 import Dashboard from "../pages/Dashboard/Dashboard";
 import Ordem from "../pages/Ordem/Ordem";
+import Cargas from "../pages/Cargas/Cargas";
 
 function AppRoutes() {
 
@@ -38,6 +39,15 @@ function AppRoutes() {
                     element={
                         token
                             ? <Ordem />
+                            : <Navigate to="/login" />
+                    }
+                />
+
+                <Route
+                    path="/cargas"
+                    element={
+                        token
+                            ? <Cargas />
                             : <Navigate to="/login" />
                     }
                 />

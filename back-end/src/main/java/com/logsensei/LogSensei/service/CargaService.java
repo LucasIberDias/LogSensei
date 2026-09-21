@@ -1,5 +1,7 @@
 package com.logsensei.LogSensei.service;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import com.logsensei.LogSensei.repository.CargaRepository;
@@ -79,5 +81,10 @@ public class CargaService {
             // Salvo o controle de carregamento
             controleCarregamentoRepository.save(controleCarregamento);
         }     
+    }
+
+    // Busca e lista todas as cargas
+    public List<Carga> listarCargas() {
+        return cargaRepository.findAll();
     }
 }

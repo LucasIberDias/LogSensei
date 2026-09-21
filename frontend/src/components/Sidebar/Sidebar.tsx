@@ -8,6 +8,7 @@ import {
 
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import AssignmentIcon from "@mui/icons-material/Assignment";
+import LocalShippingIcon from "@mui/icons-material/LocalShipping";
 
 import { useNavigate } from "react-router-dom";
 
@@ -48,6 +49,16 @@ function Sidebar() {
                     </ListItemIcon>
 
                     <ListItemText primary="Ordem" />
+                </ListItemButton>
+
+                <ListItemButton
+                    onClick={() => navigate("/cargas")}
+                >
+                    <ListItemIcon>
+                        <LocalShippingIcon />
+                    </ListItemIcon>
+
+                    <ListItemText primary="Cargas" />
                 </ListItemButton>
 
             </List>
