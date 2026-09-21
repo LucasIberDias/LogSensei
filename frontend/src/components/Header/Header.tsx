@@ -1,4 +1,9 @@
-import { AppBar, Toolbar, Typography, Button } from "@mui/material";
+import {
+    AppBar,
+    Toolbar,
+    Typography,
+    Button,
+} from "@mui/material";
 
 function Header() {
 
@@ -13,15 +18,19 @@ function Header() {
     const nomeUsuario = localStorage.getItem("nomeUsuario");
 
     return (
-        <AppBar position="fixed">
-
+        <AppBar
+            position="fixed"
+            sx={{
+                height: "64px",
+            }}
+        >
             <Toolbar
                 sx={{
                     display: "flex",
                     justifyContent: "space-between",
+                    height: "100%",
                 }}
             >
-
                 <Typography variant="h6">
                     LogSensei
                 </Typography>
@@ -36,9 +45,7 @@ function Header() {
                 >
                     Sair
                 </Button>
-
             </Toolbar>
-
         </AppBar>
     );
 }
