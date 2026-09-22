@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import {
     Box,
@@ -26,6 +26,7 @@ interface Item {
     produto: {
         codigoProduto: number;
         nomeProduto: string;
+        medidaProduto: string;
     };
 }
 
@@ -64,6 +65,19 @@ interface Carga {
     };
 }
 
+// Status conhecidos e a ordem de exibição desejada (próximo -> pendente -> entregue)
+const STATUS_PROXIMO = "PRÓXIMO";
+const STATUS_PENDENTE = "PENDENTE";
+const STATUS_ENTREGUE = "ENTREGUE";
+
+const ORDEM_STATUS = [STATUS_PROXIMO, STATUS_PENDENTE, STATUS_ENTREGUE];
+
+const STATUS_FILTROS = [
+    { valor: STATUS_PROXIMO, label: "Próximo" },
+    { valor: STATUS_PENDENTE, label: "Pendente" },
+    { valor: STATUS_ENTREGUE, label: "Entregue" },
+];
+
 function Cargas() {
 
     const [cargas, setCargas] = useState<Carga[]>([]);
@@ -79,27 +93,430 @@ function Cargas() {
 
     const [erro, setErro] = useState("");
 
+    // Controla quais status estão visíveis na listagem.
+    // Por padrão todos os três aparecem.
+    const [statusVisiveis, setStatusVisiveis] = useState<Record<string, boolean>>({
+        [STATUS_PROXIMO]: true,
+        [STATUS_PENDENTE]: true,
+        [STATUS_ENTREGUE]: true,
+    });
+
     useEffect(() => {
         carregarCargas();
     }, []);
 
     async function carregarCargas() {
-
         try {
-
             const response = await api.get("/cargas");
 
-            setCargas(response.data);
+            console.log("RESPOSTA DA API:", response.data);
+            console.log("É ARRAY?", Array.isArray(response.data));
+
+            if (Array.isArray(response.data)) {
+                setCargas(response.data);
+            } else {
+                setCargas([]);
+                console.error("A API não retornou uma lista de cargas:", response.data);
+            }
 
         } catch (error) {
-
             console.error(error);
-
-            setErro(
-                "Não foi possível carregar as cargas."
-            );
+            setErro("Não foi possível carregar as cargas.");
         }
     }
+
+    function alternarFiltroStatus(status: string) {
+        setStatusVisiveis((atual) => ({
+            ...atual,
+            [status]: !atual[status],
+        }));
+    }
+
+    function imprimirCarga(carga: Carga) {
+        const ordem = carga.ordemCarregamento;
+
+        const janela = window.open("", "_blank");
+
+        if (!janela) {
+            setErro("Não foi possível abrir a janela de impressão.");
+            return;
+        }
+
+        const dataImpressao = new Date();
+
+        const dataFormatada = dataImpressao.toLocaleDateString("pt-BR");
+
+        const horaFormatada = dataImpressao.toLocaleTimeString("pt-BR", {
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+        });
+
+        const produtos = ordem.item
+            .map(
+                (item) => `
+                <tr class="produto">
+                    <td>
+                        ${item.produto.codigoProduto}
+                    </td>
+
+                    <td>
+                        ${item.produto.nomeProduto}
+                    </td>
+
+                    <td>
+                        ${item.produto.medidaProduto}
+                    </td>
+
+                    <td>
+                        ${item.quantidade}
+                    </td>
+
+                    <td>
+                        R$ ${item.valorUnitario
+                        .toFixed(2)
+                        .replace(".", ",")}
+                    </td>
+                </tr>
+            `
+            )
+            .join("");
+
+        janela.document.write(`
+        <!DOCTYPE html>
+
+        <html lang="pt-BR">
+
+        <head>
+
+            <meta charset="UTF-8">
+
+            <title>
+                Programação de Entrega - Carga #${carga.idCarga}
+            </title>
+
+            <style>
+
+                * {
+                    box-sizing: border-box;
+                }
+
+                body {
+                    margin: 0;
+                    padding: 15px;
+                    font-family: Arial, Helvetica, sans-serif;
+                    color: #000;
+                }
+
+                .folha {
+                    width: 100%;
+                    max-width: 800px;
+                    margin: 0 auto;
+                }
+
+                .titulo {
+                    text-align: center;
+                    font-size: 22px;
+                    font-weight: bold;
+                    text-decoration: underline;
+                    margin: 10px 0 5px 0;
+                }
+
+                table {
+                    width: 100%;
+                    border-collapse: collapse;
+                    font-size: 12px;
+                }
+
+                td,
+                th {
+                    border: 1px solid #000;
+                    padding: 4px;
+                    text-align: center;
+                }
+
+                .campo {
+                    background: #00b050;
+                    color: white;
+                    font-weight: bold;
+                    width: 110px;
+                    text-align: left;
+                }
+
+                .valor {
+                    text-align: left;
+                    font-weight: bold;
+                }
+
+                .cabecalho-produtos {
+                    background: #00b050;
+                    color: white;
+                    font-weight: bold;
+                }
+
+                .produto {
+                    height: 28px;
+                }
+
+                .entrega {
+                    background: #00b050;
+                    color: white;
+                    font-weight: bold;
+                    text-align: center;
+                    font-size: 13px;
+                    padding: 7px;
+                    margin-top: 12px;
+                }
+
+                .impressao {
+                    margin-top: 14px;
+                    width: 260px;
+                }
+
+                .impressao td:first-child {
+                    background: #00b050;
+                    color: white;
+                    font-weight: bold;
+                }
+
+                .assinatura {
+                    margin-top: 14px;
+                    width: 260px;
+                }
+
+                .assinatura td {
+                    height: 35px;
+                }
+
+                .assinatura td:first-child {
+                    width: 100px;
+                    text-align: left;
+                    font-weight: bold;
+                }
+
+                .rodape {
+                    margin-top: 15px;
+                    font-size: 10px;
+                    text-align: center;
+                }
+
+                @media print {
+
+                    body {
+                        padding: 0;
+                    }
+
+                    .folha {
+                        max-width: none;
+                    }
+
+                }
+
+            </style>
+
+        </head>
+
+        <body>
+
+            <div class="folha">
+
+                <div class="titulo">
+                    PROGRAMAÇÃO DE ENTREGA
+                </div>
+
+                <table>
+
+                    <tr>
+
+                        <td class="campo">
+                            Carga
+                        </td>
+
+                        <td colspan="4" class="valor">
+                            #${carga.idCarga}
+                        </td>
+
+                    </tr>
+
+                    <tr>
+
+                        <td class="campo">
+                            Cliente
+                        </td>
+
+                        <td colspan="4" class="valor">
+                            ${ordem.cliente.nomeCliente}
+                        </td>
+
+                    </tr>
+
+                    <tr>
+
+                        <td class="campo">
+                            Endereço
+                        </td>
+
+                        <td colspan="4" class="valor">
+                            ${ordem.endereco}
+                        </td>
+
+                    </tr>
+
+                    <tr>
+
+                        <td class="campo">
+                            Pedido
+                        </td>
+
+                        <td class="valor">
+                            ${ordem.numeroPedido}
+                        </td>
+
+                        <td class="campo">
+                            Vencimento
+                        </td>
+
+                        <td colspan="2" class="valor">
+                            ${ordem.vencimento}
+                        </td>
+
+                    </tr>
+
+                    <tr>
+
+                        <td class="campo">
+                            Transportadora
+                        </td>
+
+                        <td colspan="4" class="valor">
+                            ${carga.transportadora || "-"}
+                        </td>
+
+                    </tr>
+
+                    <tr>
+
+                        <th class="cabecalho-produtos">
+                            Código
+                        </th>
+
+                        <th class="cabecalho-produtos">
+                            Descrição do Produto
+                        </th>
+
+                        <th class="cabecalho-produtos">
+                            U/M
+                        </th>
+
+                        <th class="cabecalho-produtos">
+                            UNIDADE
+                        </th>
+
+                        <th class="cabecalho-produtos">
+                            R$ UNIDADE
+                        </th>
+
+                    </tr>
+
+                    ${produtos}
+
+                </table>
+
+                <div class="entrega">
+                    ENTREGA ${ordem.dataEntrega}
+                </div>
+
+                <table class="impressao">
+
+                    <tr>
+
+                        <td>
+                            Data impressão
+                        </td>
+
+                        <td>
+                            ${dataFormatada}
+                        </td>
+
+                    </tr>
+
+                    <tr>
+
+                        <td>
+                            Hora da impressão
+                        </td>
+
+                        <td>
+                            ${horaFormatada}
+                        </td>
+
+                    </tr>
+
+                </table>
+
+                <table class="assinatura">
+
+                    <tr>
+
+                        <td>
+                            MOTORISTA
+                        </td>
+
+                        <td>
+                            ${ordem.motorista || ""}
+                        </td>
+
+                    </tr>
+
+                    <tr>
+
+                        <td>
+                            PLACA
+                        </td>
+
+                        <td>
+                            ${ordem.veiculo?.placaVeiculo || ""}
+                        </td>
+
+                    </tr>
+
+                </table>
+
+                <div class="rodape">
+                    Carga #${carga.idCarga} - LogSensei
+                </div>
+
+            </div>
+
+        </body>
+
+        </html>
+    `);
+
+        janela.document.close();
+
+        janela.onload = () => {
+            janela.focus();
+            janela.print();
+            janela.close();
+        };
+    }
+
+    // Lista final exibida: filtrada pelos status ativos e ordenada
+    // colocando "Próximo" primeiro, depois "Pendente", depois o restante.
+    const cargasExibidas = useMemo(() => {
+        return [...cargas]
+            .filter((carga) => statusVisiveis[carga.status] ?? true)
+            .sort((a, b) => {
+                const posicaoA = ORDEM_STATUS.indexOf(a.status);
+                const posicaoB = ORDEM_STATUS.indexOf(b.status);
+
+                const indiceA = posicaoA === -1 ? ORDEM_STATUS.length : posicaoA;
+                const indiceB = posicaoB === -1 ? ORDEM_STATUS.length : posicaoB;
+
+                return indiceA - indiceB;
+            });
+    }, [cargas, statusVisiveis]);
 
     function abrirEdicao(carga: Carga) {
 
@@ -175,11 +592,11 @@ function Cargas() {
 
     function obterCorStatus(status: string) {
 
-        if (status === "ENTREGUE") {
+        if (status === STATUS_ENTREGUE) {
             return "success";
         }
 
-        if (status === "PRÓXIMO") {
+        if (status === STATUS_PROXIMO) {
             return "warning";
         }
 
@@ -224,11 +641,39 @@ function Cargas() {
                     variant="body1"
                     color="text.secondary"
                     sx={{
-                        marginBottom: 4,
+                        marginBottom: 3,
                     }}
                 >
                     Visualize e gerencie as cargas cadastradas.
                 </Typography>
+
+                {/* Filtros por status: clique para ligar/desligar cada um */}
+                <Box
+                    sx={{
+                        display: "flex",
+                        gap: 1,
+                        flexWrap: "wrap",
+                        marginBottom: 4,
+                    }}
+                >
+                    {STATUS_FILTROS.map((filtro) => {
+                        const ativo = statusVisiveis[filtro.valor];
+
+                        return (
+                            <Chip
+                                key={filtro.valor}
+                                label={filtro.label}
+                                color={ativo ? obterCorStatus(filtro.valor) : "default"}
+                                variant={ativo ? "filled" : "outlined"}
+                                onClick={() => alternarFiltroStatus(filtro.valor)}
+                                sx={{
+                                    fontWeight: "bold",
+                                    opacity: ativo ? 1 : 0.6,
+                                }}
+                            />
+                        );
+                    })}
+                </Box>
 
                 {erro && (
 
@@ -243,7 +688,7 @@ function Cargas() {
 
                 )}
 
-                {cargas.map((carga) => (
+                {cargasExibidas.map((carga) => (
 
                     <Paper
                         key={carga.idCarga}
@@ -366,40 +811,47 @@ function Cargas() {
                         {carga.ordemCarregamento.item.map(
                             (item, index) => (
 
-                                <Box
-                                    key={index}
-                                    sx={{
-                                        marginBottom: 1,
-                                    }}
-                                >
+                                <Box key={index}>
 
-                                    <Typography>
-                                        <strong>
-                                            Produto:
-                                        </strong>{" "}
-                                        {item.produto.nomeProduto}
-                                    </Typography>
+                                    <Box
+                                        sx={{
+                                            marginBottom: 1,
+                                        }}
+                                    >
 
-                                    <Typography>
-                                        <strong>
-                                            Código:
-                                        </strong>{" "}
-                                        {item.codigoProduto}
-                                    </Typography>
+                                        <Typography>
+                                            <strong>
+                                                Produto:
+                                            </strong>{" "}
+                                            {item.produto.nomeProduto}
+                                        </Typography>
 
-                                    <Typography>
-                                        <strong>
-                                            Quantidade:
-                                        </strong>{" "}
-                                        {item.quantidade}
-                                    </Typography>
+                                        <Typography>
+                                            <strong>
+                                                Código:
+                                            </strong>{" "}
+                                            {item.codigoProduto ?? item.produto.codigoProduto}
+                                        </Typography>
 
-                                    <Typography>
-                                        <strong>
-                                            Valor unitário:
-                                        </strong>{" "}
-                                        R$ {item.valorUnitario}
-                                    </Typography>
+                                        <Typography>
+                                            <strong>
+                                                Quantidade:
+                                            </strong>{" "}
+                                            {item.quantidade}
+                                        </Typography>
+
+                                        <Typography>
+                                            <strong>
+                                                Valor unitário:
+                                            </strong>{" "}
+                                            R$ {item.valorUnitario}
+                                        </Typography>
+
+                                    </Box>
+
+                                    {index < carga.ordemCarregamento.item.length - 1 && (
+                                        <Divider sx={{ marginY: 1.5 }} />
+                                    )}
 
                                 </Box>
 
@@ -425,6 +877,7 @@ function Cargas() {
 
                             <Button
                                 variant="outlined"
+                                onClick={() => imprimirCarga(carga)}
                             >
                                 Imprimir
                             </Button>

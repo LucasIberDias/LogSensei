@@ -109,10 +109,10 @@ public class OrdemCarregamentoService {
         carga.setAproveitamento(aproveitamento);
         carga.setOrdemCarregamento(ordemCarregamento);
 
-        // Salvo a carga
-        cargaRepository.save(carga);
-
         // Salvo a ordem de carregamento
         ordemCarregamentoRepository.save(ordemCarregamento);
+
+        //  Salvo a carga
+        cargaRepository.save(carga);
     }
 }

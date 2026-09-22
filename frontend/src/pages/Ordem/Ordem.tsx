@@ -251,11 +251,6 @@ function Ordem() {
             return;
         }
 
-        if (!veiculo) {
-            alert("Consulte um veículo válido antes de criar a ordem.");
-            return;
-        }
-
         if (itens.some((item) => !item.produto)) {
             alert("Todos os produtos precisam estar cadastrados.");
             return;
@@ -697,7 +692,6 @@ function Ordem() {
                         onClick={criarOrdem}
                         disabled={
                             !cliente ||
-                            !veiculo ||
                             itens.some((item) => !item.produto)
                         }
                     >

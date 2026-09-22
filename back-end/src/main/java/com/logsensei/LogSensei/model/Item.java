@@ -1,5 +1,7 @@
 package com.logsensei.LogSensei.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -33,6 +35,7 @@ public class Item {
     @ManyToOne
     private Produto produto;
 
+    @JsonIgnore
     @NotNull
     @ManyToOne
     private OrdemCarregamento ordemCarregamento;
