@@ -702,7 +702,7 @@ function Cargas() {
                     <tr>
 
                         <td>
-                            ${carga.idCarga}
+                            ${carga.ordemCarregamento.cliente.codigoCliente}
                         </td>
 
                     </tr>
