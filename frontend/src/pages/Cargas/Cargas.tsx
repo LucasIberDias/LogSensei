@@ -110,6 +110,33 @@ function Cargas() {
         carregarCargas();
     }, []);
 
+    async function carregarCargas() {
+        try {
+            const response = await api.get("/cargas");
+
+            console.log("RESPOSTA DA API:", response.data);
+            console.log("É ARRAY?", Array.isArray(response.data));
+
+            if (Array.isArray(response.data)) {
+                setCargas(response.data);
+            } else {
+                setCargas([]);
+                console.error("A API não retornou uma lista de cargas:", response.data);
+            }
+
+        } catch (error) {
+            console.error(error);
+            setErro("Não foi possível carregar as cargas.");
+        }
+    }
+
+    function alternarFiltroStatus(status: string) {
+        setStatusVisiveis((atual) => ({
+            ...atual,
+            [status]: !atual[status],
+        }));
+    }
+
     function imprimirCarga(carga: Carga) {
         const ordem = carga.ordemCarregamento;
 
