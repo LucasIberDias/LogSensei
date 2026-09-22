@@ -1,4 +1,4 @@
-package com.logsensei.LogSensei;
+package com.logsensei.LogSensei.config;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
@@ -7,7 +7,7 @@ public class GerarSenha {
     public static void main(String[] args) {
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
-        String senha = "";
+        String senha = "12345678";
 
         System.out.println(encoder.encode(senha));
     }

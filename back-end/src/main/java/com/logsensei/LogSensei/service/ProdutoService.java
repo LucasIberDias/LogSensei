@@ -3,7 +3,6 @@ package com.logsensei.LogSensei.service;
 import org.springframework.stereotype.Service;
 
 import com.logsensei.LogSensei.dto.produto.ProdutoRequestDTO;
-import com.logsensei.LogSensei.model.Cliente;
 import com.logsensei.LogSensei.model.Produto;
 import com.logsensei.LogSensei.repository.ProdutoRepository;
 
