@@ -245,6 +245,34 @@ function Ordem() {
         ]);
     }
 
+    function removerItem(index: number) {
+        /*
+         * Se existir apenas um item,
+         * apenas limpa os dados dele.
+         */
+        if (itens.length === 1) {
+            setItens([
+                {
+                    codigoProduto: "",
+                    quantidade: 0,
+                    valorUnitario: 0,
+                    produto: null,
+                    erro: "",
+                },
+            ]);
+
+            return;
+        }
+
+        /*
+         * Se existir mais de um item,
+         * remove completamente o item selecionado.
+         */
+        setItens((itensAtuais) =>
+            itensAtuais.filter((_, itemIndex) => itemIndex !== index)
+        );
+    }
+
     async function criarOrdem() {
         if (!cliente) {
             alert("Consulte um cliente válido antes de criar a ordem.");
@@ -271,8 +299,14 @@ function Ordem() {
                 vencimento,
                 observacao,
                 dataEntrega,
+
+                /*
+                 * Motorista e veículo são opcionais.
+                 * Se não forem informados, serão enviados vazios.
+                 */
                 motorista,
                 placaVeiculo,
+
                 idUsuario: Number(idUsuario),
 
                 itens: itens.map((item) => ({
@@ -285,6 +319,25 @@ function Ordem() {
             await api.post("/ordemCarregamento", dados);
 
             alert("Ordem de carregamento criada com sucesso!");
+
+            /*
+             * Recarrega a página depois da criação.
+             *
+             * Isso limpa todos os estados:
+             * - cliente
+             * - endereço
+             * - número do pedido
+             * - vencimento
+             * - data de entrega
+             * - motorista
+             * - veículo
+             * - observação
+             * - produtos
+             *
+             * O localStorage não é limpo,
+             * portanto o usuário continua logado.
+             */
+            window.location.reload();
         } catch (error) {
             console.error(error);
 
@@ -394,8 +447,14 @@ function Ordem() {
                         <InfoBox
                             titulo="Cliente encontrado"
                             campos={[
-                                { label: "Código", value: cliente.codigoCliente },
-                                { label: "Nome Cliente", value: cliente.nomeCliente },
+                                {
+                                    label: "Código",
+                                    value: cliente.codigoCliente,
+                                },
+                                {
+                                    label: "Nome Cliente",
+                                    value: cliente.nomeCliente,
+                                },
                             ]}
                         />
                     )}
@@ -524,7 +583,9 @@ function Ordem() {
                             label="Placa do veículo"
                             value={placaVeiculo}
                             onChange={(e) => {
-                                setPlacaVeiculo(e.target.value.toUpperCase());
+                                setPlacaVeiculo(
+                                    e.target.value.toUpperCase()
+                                );
 
                                 setVeiculo(null);
                                 setErroVeiculo("");
@@ -552,9 +613,18 @@ function Ordem() {
                         <InfoBox
                             titulo="Veículo encontrado"
                             campos={[
-                                { label: "Placa", value: veiculo.placaVeiculo },
-                                { label: "Veículo", value: veiculo.tipoVeiculo },
-                                { label: "Capacidade", value: veiculo.capacidadeVeiculo },
+                                {
+                                    label: "Placa",
+                                    value: veiculo.placaVeiculo,
+                                },
+                                {
+                                    label: "Veículo",
+                                    value: veiculo.tipoVeiculo,
+                                },
+                                {
+                                    label: "Capacidade",
+                                    value: veiculo.capacidadeVeiculo,
+                                },
                             ]}
                         />
                     )}
@@ -601,7 +671,7 @@ function Ordem() {
                                     display: "grid",
                                     gridTemplateColumns: {
                                         xs: "1fr",
-                                        md: "2fr 1fr 1fr auto",
+                                        md: "2fr 1fr 1fr auto auto",
                                     },
                                     gap: 2,
                                     alignItems: "center",
@@ -627,7 +697,9 @@ function Ordem() {
                                     value={item.quantidade}
                                     onChange={(e) =>
                                         atualizarItem(index, {
-                                            quantidade: Number(e.target.value),
+                                            quantidade: Number(
+                                                e.target.value
+                                            ),
                                         })
                                     }
                                     fullWidth
@@ -639,7 +711,9 @@ function Ordem() {
                                     value={item.valorUnitario}
                                     onChange={(e) =>
                                         atualizarItem(index, {
-                                            valorUnitario: Number(e.target.value),
+                                            valorUnitario: Number(
+                                                e.target.value
+                                            ),
                                         })
                                     }
                                     fullWidth
@@ -654,25 +728,53 @@ function Ordem() {
                                 >
                                     Consultar
                                 </Button>
+
+                                <Button
+                                    variant="outlined"
+                                    color="error"
+                                    onClick={() => removerItem(index)}
+                                    sx={{
+                                        height: 56,
+                                    }}
+                                >
+                                    Remover
+                                </Button>
                             </Box>
 
                             {item.produto && (
                                 <InfoBox
                                     titulo="Produto encontrado"
                                     campos={[
-                                        { label: "Código", value: item.produto.codigoProduto },
-                                        { label: "Nome Produto", value: item.produto.nomeProduto },
-                                        { label: "Medida", value: item.produto.medidaProduto },
-                                        { label: "Peso", value: item.produto.pesoProduto },
+                                        {
+                                            label: "Código",
+                                            value: item.produto.codigoProduto,
+                                        },
+                                        {
+                                            label: "Nome Produto",
+                                            value: item.produto.nomeProduto,
+                                        },
+                                        {
+                                            label: "Medida",
+                                            value: item.produto.medidaProduto,
+                                        },
+                                        {
+                                            label: "Peso",
+                                            value: item.produto.pesoProduto,
+                                        },
                                     ]}
                                 />
                             )}
 
-                            {item.erro && <ErroBox mensagem={item.erro} />}
+                            {item.erro && (
+                                <ErroBox mensagem={item.erro} />
+                            )}
                         </Box>
                     ))}
 
-                    <Button variant="outlined" onClick={adicionarItem}>
+                    <Button
+                        variant="outlined"
+                        onClick={adicionarItem}
+                    >
                         Adicionar produto
                     </Button>
                 </Paper>
