@@ -15,7 +15,16 @@ import {
     TableRow,
     Paper,
     Chip,
+    Avatar,
+    Stack,
 } from "@mui/material";
+import LocalShippingRoundedIcon from "@mui/icons-material/LocalShippingRounded";
+import PendingActionsRoundedIcon from "@mui/icons-material/PendingActionsRounded";
+import ScheduleRoundedIcon from "@mui/icons-material/ScheduleRounded";
+import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
+import EventAvailableRoundedIcon from "@mui/icons-material/EventAvailableRounded";
+import InboxRoundedIcon from "@mui/icons-material/InboxRounded";
+import SpeedRoundedIcon from "@mui/icons-material/SpeedRounded";
 
 import Header from "../../components/Header/Header";
 import Sidebar from "../../components/Sidebar/Sidebar";
@@ -42,6 +51,75 @@ interface Carga {
             placaVeiculo: string;
         } | null;
     };
+}
+
+// Paleta central do dashboard — fácil de ajustar em um só lugar
+const palette = {
+    total: { main: "#2563eb", bg: "#eaf1fe" }, // azul
+    pendente: { main: "#f59e0b", bg: "#fef6e7" }, // âmbar
+    proxima: { main: "#8b5cf6", bg: "#f3eefe" }, // roxo
+    entregue: { main: "#16a34a", bg: "#eaf7ee" }, // verde
+};
+
+function statusColor(status: string) {
+    const s = status?.toUpperCase();
+    if (s === "ENTREGUE") return { color: "success" as const };
+    if (s === "PENDENTE") return { color: "warning" as const };
+    if (s === "PRÓXIMO") return { color: "secondary" as const };
+    return { color: "default" as const };
+}
+
+interface StatCardProps {
+    label: string;
+    value: number;
+    icon: React.ReactNode;
+    tone: { main: string; bg: string };
+}
+
+function StatCard({ label, value, icon, tone }: StatCardProps) {
+    return (
+        <Card
+            elevation={0}
+            sx={{
+                height: "100%",
+                borderRadius: 3,
+                border: "1px solid #eef0f3",
+                boxShadow: "0 2px 10px rgba(20, 20, 43, 0.04)",
+            }}
+        >
+            <CardContent>
+                <Stack
+                    direction="row"
+                    spacing={2}
+                    sx={{ alignItems: "center" }}
+                >
+                    <Avatar
+                        sx={{
+                            bgcolor: tone.bg,
+                            color: tone.main,
+                            width: 48,
+                            height: 48,
+                        }}
+                    >
+                        {icon}
+                    </Avatar>
+
+                    <Box>
+                        <Typography variant="body2" color="text.secondary">
+                            {label}
+                        </Typography>
+
+                        <Typography
+                            variant="h4"
+                            sx={{ fontWeight: 700, lineHeight: 1.2 }}
+                        >
+                            {value}
+                        </Typography>
+                    </Box>
+                </Stack>
+            </CardContent>
+        </Card>
+    );
 }
 
 function Dashboard() {
@@ -94,13 +172,20 @@ function Dashboard() {
             carga.aproveitamento !== undefined
     );
 
-    const aproveitamentoMedio =
+    const aproveitamentoMedioBruto =
         cargasComAproveitamento.length > 0
             ? cargasComAproveitamento.reduce(
-                  (total, carga) => total + Number(carga.aproveitamento),
-                  0
-              ) / cargasComAproveitamento.length
+                (total, carga) => total + Number(carga.aproveitamento),
+                0
+            ) / cargasComAproveitamento.length
             : 0;
+
+    // Blindagem contra valores vindos da API fora da faixa 0–100
+    // (evita algo como "14562.5%" quebrar o layout do card)
+    const aproveitamentoMedio = Math.min(
+        Math.max(aproveitamentoMedioBruto, 0),
+        100
+    );
 
     // Data atual no formato YYYY-MM-DD
     const hoje = new Date().toISOString().split("T")[0];
@@ -113,6 +198,9 @@ function Dashboard() {
 
         return carga.ordemCarregamento.dataEntrega.substring(0, 10) === hoje;
     });
+
+    const percentualEntregue =
+        totalCargas > 0 ? (cargasEntregues / totalCargas) * 100 : 0;
 
     return (
         <Box>
@@ -130,13 +218,14 @@ function Dashboard() {
                 }}
             >
                 {/* Título */}
-                <Typography variant="h4" sx={{ fontWeight: "bold" }}>
+                <Typography variant="h4" sx={{ fontWeight: 800 }}>
                     Dashboard
                 </Typography>
 
                 <Typography
                     variant="body1"
-                    sx={{ marginTop: 1, marginBottom: 4 }}
+                    color="text.secondary"
+                    sx={{ marginTop: 0.5, marginBottom: 4 }}
                 >
                     Bem-vindo, {nomeUsuario}!
                 </Typography>
@@ -162,127 +251,83 @@ function Dashboard() {
                     <>
                         {/* CARDS PRINCIPAIS */}
                         <Grid container spacing={3}>
-                            {/* Total */}
                             <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-                                <Card>
-                                    <CardContent>
-                                        <Typography
-                                            variant="body2"
-                                            color="text.secondary"
-                                        >
-                                            Total de cargas
-                                        </Typography>
-
-                                        <Typography
-                                            variant="h3"
-                                            sx={{
-                                                marginTop: 1,
-                                                fontWeight: "bold",
-                                            }}
-                                        >
-                                            {totalCargas}
-                                        </Typography>
-                                    </CardContent>
-                                </Card>
+                                <StatCard
+                                    label="Total de cargas"
+                                    value={totalCargas}
+                                    icon={<LocalShippingRoundedIcon />}
+                                    tone={palette.total}
+                                />
                             </Grid>
 
-                            {/* Pendentes */}
                             <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-                                <Card>
-                                    <CardContent>
-                                        <Typography
-                                            variant="body2"
-                                            color="text.secondary"
-                                        >
-                                            Cargas pendentes
-                                        </Typography>
-
-                                        <Typography
-                                            variant="h3"
-                                            sx={{
-                                                marginTop: 1,
-                                                fontWeight: "bold",
-                                            }}
-                                        >
-                                            {cargasPendentes}
-                                        </Typography>
-                                    </CardContent>
-                                </Card>
+                                <StatCard
+                                    label="Cargas pendentes"
+                                    value={cargasPendentes}
+                                    icon={<PendingActionsRoundedIcon />}
+                                    tone={palette.pendente}
+                                />
                             </Grid>
 
-                            {/* Próximas */}
                             <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-                                <Card>
-                                    <CardContent>
-                                        <Typography
-                                            variant="body2"
-                                            color="text.secondary"
-                                        >
-                                            Cargas próximas
-                                        </Typography>
-
-                                        <Typography
-                                            variant="h3"
-                                            sx={{
-                                                marginTop: 1,
-                                                fontWeight: "bold",
-                                            }}
-                                        >
-                                            {cargasProximas}
-                                        </Typography>
-                                    </CardContent>
-                                </Card>
+                                <StatCard
+                                    label="Cargas próximas"
+                                    value={cargasProximas}
+                                    icon={<ScheduleRoundedIcon />}
+                                    tone={palette.proxima}
+                                />
                             </Grid>
 
-                            {/* Entregues */}
                             <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-                                <Card>
-                                    <CardContent>
-                                        <Typography
-                                            variant="body2"
-                                            color="text.secondary"
-                                        >
-                                            Cargas entregues
-                                        </Typography>
-
-                                        <Typography
-                                            variant="h3"
-                                            sx={{
-                                                marginTop: 1,
-                                                fontWeight: "bold",
-                                            }}
-                                        >
-                                            {cargasEntregues}
-                                        </Typography>
-                                    </CardContent>
-                                </Card>
+                                <StatCard
+                                    label="Cargas entregues"
+                                    value={cargasEntregues}
+                                    icon={<CheckCircleRoundedIcon />}
+                                    tone={palette.entregue}
+                                />
                             </Grid>
                         </Grid>
 
                         {/* SEGUNDA LINHA */}
-                        <Grid
-                            container
-                            spacing={3}
-                            sx={{ marginTop: 0 }}
-                        >
+                        <Grid container spacing={3} sx={{ marginTop: 0.5 }}>
                             {/* Aproveitamento */}
                             <Grid size={{ xs: 12, md: 4 }}>
-                                <Card>
+                                <Card
+                                    elevation={0}
+                                    sx={{
+                                        height: "100%",
+                                        borderRadius: 3,
+                                        border: "1px solid #eef0f3",
+                                        boxShadow:
+                                            "0 2px 10px rgba(20, 20, 43, 0.04)",
+                                    }}
+                                >
                                     <CardContent>
-                                        <Typography
-                                            variant="body2"
-                                            color="text.secondary"
-                                        >
-                                            Aproveitamento médio dos veículos
-                                        </Typography>
-
-                                        <Box
+                                        <Stack
+                                            direction="row"
+                                            spacing={1}
                                             sx={{
-                                                display: "flex",
                                                 alignItems: "center",
-                                                gap: 3,
-                                                marginTop: 2,
+                                                marginBottom: 2,
                                             }}
+                                        >
+                                            <SpeedRoundedIcon
+                                                fontSize="small"
+                                                sx={{ color: "#2563eb" }}
+                                            />
+                                            <Typography
+                                                variant="body2"
+                                                color="text.secondary"
+                                            >
+                                                Aproveitamento médio dos
+                                                veículos
+                                            </Typography>
+                                        </Stack>
+
+                                        <Stack
+                                            direction="row"
+                                            spacing={3}
+                                            sx={{ alignItems: "center" }}
                                         >
                                             <Box
                                                 sx={{
@@ -292,12 +337,21 @@ function Dashboard() {
                                             >
                                                 <CircularProgress
                                                     variant="determinate"
-                                                    value={Math.min(
-                                                        aproveitamentoMedio,
-                                                        100
-                                                    )}
+                                                    value={100}
                                                     size={90}
                                                     thickness={5}
+                                                    sx={{
+                                                        color: "#eef0f3",
+                                                        position: "absolute",
+                                                    }}
+                                                />
+
+                                                <CircularProgress
+                                                    variant="determinate"
+                                                    value={aproveitamentoMedio}
+                                                    size={90}
+                                                    thickness={5}
+                                                    sx={{ color: "#2563eb" }}
                                                 />
 
                                                 <Box
@@ -315,7 +369,9 @@ function Dashboard() {
                                                 >
                                                     <Typography
                                                         variant="body1"
-                                                        sx={{ fontWeight: "bold" }}
+                                                        sx={{
+                                                            fontWeight: 700,
+                                                        }}
                                                     >
                                                         {aproveitamentoMedio.toFixed(
                                                             1
@@ -333,48 +389,33 @@ function Dashboard() {
                                                 considerando as cargas
                                                 cadastradas.
                                             </Typography>
-                                        </Box>
+                                        </Stack>
                                     </CardContent>
                                 </Card>
                             </Grid>
 
                             {/* Entregas de hoje */}
                             <Grid size={{ xs: 12, md: 4 }}>
-                                <Card>
-                                    <CardContent>
-                                        <Typography
-                                            variant="body2"
-                                            color="text.secondary"
-                                        >
-                                            Entregas agendadas hoje
-                                        </Typography>
-
-                                        <Typography
-                                            variant="h3"
-                                            sx={{
-                                                marginTop: 1,
-                                                fontWeight: "bold",
-                                            }}
-                                        >
-                                            {entregasHoje.length}
-                                        </Typography>
-
-                                        <Typography
-                                            variant="body2"
-                                            color="text.secondary"
-                                            sx={{ marginTop: 1 }}
-                                        >
-                                            {entregasHoje.length === 1
-                                                ? "entrega programada para hoje"
-                                                : "entregas programadas para hoje"}
-                                        </Typography>
-                                    </CardContent>
-                                </Card>
+                                <StatCard
+                                    label="Entregas agendadas hoje"
+                                    value={entregasHoje.length}
+                                    icon={<EventAvailableRoundedIcon />}
+                                    tone={palette.proxima}
+                                />
                             </Grid>
 
                             {/* Percentual entregue */}
                             <Grid size={{ xs: 12, md: 4 }}>
-                                <Card>
+                                <Card
+                                    elevation={0}
+                                    sx={{
+                                        height: "100%",
+                                        borderRadius: 3,
+                                        border: "1px solid #eef0f3",
+                                        boxShadow:
+                                            "0 2px 10px rgba(20, 20, 43, 0.04)",
+                                    }}
+                                >
                                     <CardContent>
                                         <Typography
                                             variant="body2"
@@ -387,17 +428,11 @@ function Dashboard() {
                                             variant="h3"
                                             sx={{
                                                 marginTop: 1,
-                                                fontWeight: "bold",
+                                                fontWeight: 700,
+                                                color: palette.entregue.main,
                                             }}
                                         >
-                                            {totalCargas > 0
-                                                ? (
-                                                      (cargasEntregues /
-                                                          totalCargas) *
-                                                      100
-                                                  ).toFixed(1)
-                                                : "0.0"}
-                                            %
+                                            {percentualEntregue.toFixed(1)}%
                                         </Typography>
 
                                         <Typography
@@ -413,48 +448,80 @@ function Dashboard() {
                         </Grid>
 
                         {/* ENTREGAS DE HOJE */}
-                        <Card sx={{ marginTop: 3 }}>
+                        <Card
+                            elevation={0}
+                            sx={{
+                                marginTop: 3,
+                                borderRadius: 3,
+                                border: "1px solid #eef0f3",
+                                boxShadow: "0 2px 10px rgba(20, 20, 43, 0.04)",
+                            }}
+                        >
                             <CardContent>
                                 <Typography
                                     variant="h6"
-
                                     sx={{
                                         marginBottom: 2,
-                                        fontWeight: "bold",
+                                        fontWeight: 700,
                                     }}
                                 >
                                     Entregas agendadas para hoje
                                 </Typography>
 
                                 {entregasHoje.length === 0 ? (
-                                    <Typography color="text.secondary">
-                                        Nenhuma entrega agendada para hoje.
-                                    </Typography>
+                                    <Box
+                                        sx={{
+                                            alignItems: "center",
+                                            display: "flex",
+                                            flexDirection: "column",
+                                            gap: 1,
+                                            paddingY: 5,
+                                        }}
+                                    >
+                                        <InboxRoundedIcon
+                                            sx={{
+                                                fontSize: 40,
+                                                color: "text.disabled",
+                                            }}
+                                        />
+                                        <Typography color="text.secondary">
+                                            Nenhuma entrega agendada para
+                                            hoje.
+                                        </Typography>
+                                    </Box>
                                 ) : (
-                                    <TableContainer component={Paper}>
+                                    <TableContainer
+                                        component={Paper}
+                                        elevation={0}
+                                        sx={{ border: "1px solid #eef0f3" }}
+                                    >
                                         <Table>
                                             <TableHead>
-                                                <TableRow>
+                                                <TableRow
+                                                    sx={{
+                                                        "& th": {
+                                                            fontWeight: 700,
+                                                            backgroundColor:
+                                                                "#f8f9fb",
+                                                            color: "text.secondary",
+                                                        },
+                                                    }}
+                                                >
                                                     <TableCell>
                                                         Pedido
                                                     </TableCell>
-
                                                     <TableCell>
                                                         Cliente
                                                     </TableCell>
-
                                                     <TableCell>
                                                         Endereço
                                                     </TableCell>
-
                                                     <TableCell>
                                                         Motorista
                                                     </TableCell>
-
                                                     <TableCell>
                                                         Veículo
                                                     </TableCell>
-
                                                     <TableCell>
                                                         Status
                                                     </TableCell>
@@ -465,6 +532,14 @@ function Dashboard() {
                                                 {entregasHoje.map((carga) => (
                                                     <TableRow
                                                         key={carga.idCarga}
+                                                        hover
+                                                        sx={{
+                                                            "&:last-child td":
+                                                            {
+                                                                borderBottom:
+                                                                    "none",
+                                                            },
+                                                        }}
                                                     >
                                                         <TableCell>
                                                             {
@@ -512,6 +587,14 @@ function Dashboard() {
                                                                     carga.status
                                                                 }
                                                                 size="small"
+                                                                color={
+                                                                    statusColor(
+                                                                        carga.status
+                                                                    ).color
+                                                                }
+                                                                sx={{
+                                                                    fontWeight: 600,
+                                                                }}
                                                             />
                                                         </TableCell>
                                                     </TableRow>
@@ -530,4 +613,3 @@ function Dashboard() {
 }
 
 export default Dashboard;
-
