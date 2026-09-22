@@ -9,7 +9,7 @@ import com.logsensei.LogSensei.service.VeiculoService;
 import com.logsensei.LogSensei.model.Veiculo;
 
 @RestController
-@RequestMapping("/veiculo")
+@RequestMapping("/veiculos")
 public class VeiculoController {
 
     private final VeiculoService veiculoService;

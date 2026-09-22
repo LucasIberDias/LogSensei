@@ -10,7 +10,7 @@ import com.logsensei.LogSensei.service.ClienteService;
 import com.logsensei.LogSensei.model.Cliente;
 
 @RestController
-@RequestMapping("/cliente")
+@RequestMapping("/clientes")
 public class ClienteController {
 
     private final ClienteService clienteService;

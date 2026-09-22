@@ -9,7 +9,7 @@ import com.logsensei.LogSensei.service.ProdutoService;
 import com.logsensei.LogSensei.model.Produto;
 
 @RestController
-@RequestMapping("/produto")
+@RequestMapping("/produtos")
 public class ProdutoController {
 
     private final ProdutoService produtoService;

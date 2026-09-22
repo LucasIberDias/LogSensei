@@ -8,7 +8,6 @@ import {
     Paper,
     Divider,
     Alert,
-    Chip,
 } from "@mui/material";
 
 import Header from "../../components/Header/Header";
@@ -22,10 +21,15 @@ interface Cliente {
 
 interface Veiculo {
     placaVeiculo: string;
+    tipoVeiculo: string;
+    capacidadeVeiculo: number;
 }
 
 interface Produto {
     codigoProduto: number;
+    nomeProduto: string;
+    medidaProduto: string;
+    pesoProduto: number;
 }
 
 interface Item {
@@ -36,8 +40,84 @@ interface Item {
     erro: string;
 }
 
-function Ordem() {
+interface Campo {
+    label: string;
+    value: string | number;
+}
 
+/* ================= COMPONENTES AUXILIARES ================= */
+
+function InfoBox({
+    titulo,
+    campos,
+}: {
+    titulo: string;
+    campos: Campo[];
+}) {
+    return (
+        <Box
+            sx={{
+                marginTop: 2,
+                padding: 2,
+                border: "1px solid",
+                borderColor: "success.main",
+                borderRadius: 1,
+            }}
+        >
+            <Typography
+                variant="subtitle1"
+                sx={{
+                    marginBottom: 1,
+                    fontWeight: "bold",
+                }}
+            >
+                {titulo}
+            </Typography>
+
+            <Box
+                sx={{
+                    display: "flex",
+                    flexWrap: "wrap",
+                    columnGap: 4,
+                    rowGap: 0.5,
+                }}
+            >
+                {campos.map((campo) => (
+                    <Box
+                        key={campo.label}
+                        sx={{
+                            display: "flex",
+                            gap: 0.5,
+                        }}
+                    >
+                        <Typography sx={{ fontWeight: "bold" }}>
+                            {campo.label}:
+                        </Typography>
+
+                        <Typography>{campo.value}</Typography>
+                    </Box>
+                ))}
+            </Box>
+        </Box>
+    );
+}
+
+function ErroBox({ mensagem }: { mensagem: string }) {
+    return (
+        <Alert
+            severity="error"
+            sx={{
+                marginTop: 2,
+            }}
+        >
+            {mensagem}
+        </Alert>
+    );
+}
+
+/* ================= PÁGINA ================= */
+
+function Ordem() {
     const [codigoCliente, setCodigoCliente] = useState("");
     const [cliente, setCliente] = useState<Cliente | null>(null);
     const [erroCliente, setErroCliente] = useState("");
@@ -65,7 +145,6 @@ function Ordem() {
     ]);
 
     async function buscarCliente() {
-
         if (!codigoCliente) {
             setCliente(null);
             setErroCliente("Informe o código do cliente.");
@@ -73,16 +152,13 @@ function Ordem() {
         }
 
         try {
-
             const response = await api.get(
                 `/clientes/codigo/${codigoCliente}`
             );
 
             setCliente(response.data);
             setErroCliente("");
-
         } catch (error) {
-
             console.error(error);
 
             setCliente(null);
@@ -91,7 +167,6 @@ function Ordem() {
     }
 
     async function buscarVeiculo() {
-
         if (!placaVeiculo) {
             setVeiculo(null);
             setErroVeiculo("Informe a placa do veículo.");
@@ -99,16 +174,13 @@ function Ordem() {
         }
 
         try {
-
             const response = await api.get(
                 `/veiculos/placa/${placaVeiculo}`
             );
 
             setVeiculo(response.data);
             setErroVeiculo("");
-
         } catch (error) {
-
             console.error(error);
 
             setVeiculo(null);
@@ -117,11 +189,9 @@ function Ordem() {
     }
 
     async function buscarProduto(index: number) {
-
         const item = itens[index];
 
         if (!item.codigoProduto) {
-
             atualizarItem(index, {
                 produto: null,
                 erro: "Informe o código do produto.",
@@ -131,49 +201,38 @@ function Ordem() {
         }
 
         try {
-
             const response = await api.get(
                 `/produtos/codigo/${item.codigoProduto}`
             );
 
-            const novosItens = [...itens];
-
-            novosItens[index].produto = response.data;
-            novosItens[index].erro = "";
-
-            setItens(novosItens);
-
+            atualizarItem(index, {
+                produto: response.data,
+                erro: "",
+            });
         } catch (error) {
-
             console.error(error);
 
-            const novosItens = [...itens];
-
-            novosItens[index].produto = null;
-            novosItens[index].erro =
-                "Produto não possui cadastro.";
-
-            setItens(novosItens);
+            atualizarItem(index, {
+                produto: null,
+                erro: "Produto não possui cadastro.",
+            });
         }
     }
 
-    function atualizarItem(
-        index: number,
-        dados: Partial<Item>
-    ) {
+    function atualizarItem(index: number, dados: Partial<Item>) {
+        setItens((itensAtuais) => {
+            const novosItens = [...itensAtuais];
 
-        const novosItens = [...itens];
+            novosItens[index] = {
+                ...novosItens[index],
+                ...dados,
+            };
 
-        novosItens[index] = {
-            ...novosItens[index],
-            ...dados,
-        };
-
-        setItens(novosItens);
+            return novosItens;
+        });
     }
 
     function adicionarItem() {
-
         setItens([
             ...itens,
             {
@@ -187,25 +246,18 @@ function Ordem() {
     }
 
     async function criarOrdem() {
-
         if (!cliente) {
-            alert(
-                "Consulte um cliente válido antes de criar a ordem."
-            );
+            alert("Consulte um cliente válido antes de criar a ordem.");
             return;
         }
 
         if (!veiculo) {
-            alert(
-                "Consulte um veículo válido antes de criar a ordem."
-            );
+            alert("Consulte um veículo válido antes de criar a ordem.");
             return;
         }
 
         if (itens.some((item) => !item.produto)) {
-            alert(
-                "Todos os produtos precisam estar cadastrados."
-            );
+            alert("Todos os produtos precisam estar cadastrados.");
             return;
         }
 
@@ -217,62 +269,36 @@ function Ordem() {
         }
 
         try {
-
             const dados = {
-
                 codigoCliente: Number(codigoCliente),
-
                 endereco,
-
                 numeroPedido,
-
                 vencimento,
-
                 observacao,
-
                 dataEntrega,
-
                 motorista,
-
                 placaVeiculo,
-
                 idUsuario: Number(idUsuario),
 
                 itens: itens.map((item) => ({
-
-                    codigoProduto: Number(
-                        item.codigoProduto
-                    ),
-
+                    codigoProduto: Number(item.codigoProduto),
                     quantidade: item.quantidade,
-
                     valorUnitario: item.valorUnitario,
-
                 })),
             };
 
-            await api.post(
-                "/ordemCarregamento",
-                dados
-            );
+            await api.post("/ordemCarregamento", dados);
 
-            alert(
-                "Ordem de carregamento criada com sucesso!"
-            );
-
+            alert("Ordem de carregamento criada com sucesso!");
         } catch (error) {
-
             console.error(error);
 
-            alert(
-                "Não foi possível criar a ordem de carregamento."
-            );
+            alert("Não foi possível criar a ordem de carregamento.");
         }
     }
 
     return (
         <Box>
-
             <Header />
 
             <Sidebar />
@@ -284,13 +310,13 @@ function Ordem() {
                         xs: 0,
                         md: "240px",
                     },
+
                     padding: {
                         xs: 2,
                         md: 4,
                     },
                 }}
             >
-
                 <Box sx={{ height: "64px" }} />
 
                 <Typography
@@ -313,6 +339,8 @@ function Ordem() {
                     Crie uma nova ordem de carregamento.
                 </Typography>
 
+                {/* ================= CLIENTE ================= */}
+
                 <Paper
                     elevation={1}
                     sx={{
@@ -320,7 +348,6 @@ function Ordem() {
                         marginBottom: 3,
                     }}
                 >
-
                     <Typography
                         variant="h6"
                         sx={{
@@ -339,18 +366,13 @@ function Ordem() {
                             flexWrap: "wrap",
                         }}
                     >
-
                         <TextField
                             label="Código do cliente"
                             value={codigoCliente}
                             onChange={(e) => {
-
-                                setCodigoCliente(
-                                    e.target.value
-                                );
+                                setCodigoCliente(e.target.value);
 
                                 setCliente(null);
-
                                 setErroCliente("");
                             }}
                             type="number"
@@ -371,36 +393,22 @@ function Ordem() {
                         >
                             Consultar
                         </Button>
-
                     </Box>
 
                     {cliente && (
-
-                        <Chip
-                            label={`Cliente: ${cliente.nomeCliente}`}
-                            color="success"
-                            variant="outlined"
-                            sx={{
-                                marginTop: 2,
-                            }}
+                        <InfoBox
+                            titulo="Cliente encontrado"
+                            campos={[
+                                { label: "Código", value: cliente.codigoCliente },
+                                { label: "Nome Cliente", value: cliente.nomeCliente },
+                            ]}
                         />
-
                     )}
 
-                    {erroCliente && (
-
-                        <Alert
-                            severity="error"
-                            sx={{
-                                marginTop: 2,
-                            }}
-                        >
-                            {erroCliente}
-                        </Alert>
-
-                    )}
-
+                    {erroCliente && <ErroBox mensagem={erroCliente} />}
                 </Paper>
+
+                {/* ================= DADOS DA ORDEM ================= */}
 
                 <Paper
                     elevation={1}
@@ -409,7 +417,6 @@ function Ordem() {
                         marginBottom: 3,
                     }}
                 >
-
                     <Typography
                         variant="h6"
                         sx={{
@@ -423,35 +430,24 @@ function Ordem() {
                     <Box
                         sx={{
                             display: "grid",
-
                             gridTemplateColumns: {
                                 xs: "1fr",
                                 md: "1fr 1fr",
                             },
-
                             gap: 2,
                         }}
                     >
-
                         <TextField
                             label="Número do pedido"
                             value={numeroPedido}
-                            onChange={(e) =>
-                                setNumeroPedido(
-                                    e.target.value
-                                )
-                            }
+                            onChange={(e) => setNumeroPedido(e.target.value)}
                             fullWidth
                         />
 
                         <TextField
                             label="Endereço"
                             value={endereco}
-                            onChange={(e) =>
-                                setEndereco(
-                                    e.target.value
-                                )
-                            }
+                            onChange={(e) => setEndereco(e.target.value)}
                             fullWidth
                         />
 
@@ -459,11 +455,7 @@ function Ordem() {
                             label="Vencimento"
                             type="date"
                             value={vencimento}
-                            onChange={(e) =>
-                                setVencimento(
-                                    e.target.value
-                                )
-                            }
+                            onChange={(e) => setVencimento(e.target.value)}
                             slotProps={{
                                 inputLabel: {
                                     shrink: true,
@@ -476,11 +468,7 @@ function Ordem() {
                             label="Data de entrega"
                             type="date"
                             value={dataEntrega}
-                            onChange={(e) =>
-                                setDataEntrega(
-                                    e.target.value
-                                )
-                            }
+                            onChange={(e) => setDataEntrega(e.target.value)}
                             slotProps={{
                                 inputLabel: {
                                     shrink: true,
@@ -492,24 +480,15 @@ function Ordem() {
                         <TextField
                             label="Motorista"
                             value={motorista}
-                            onChange={(e) =>
-                                setMotorista(
-                                    e.target.value
-                                )
-                            }
+                            onChange={(e) => setMotorista(e.target.value)}
                             fullWidth
                         />
-
                     </Box>
 
                     <TextField
                         label="Observação"
                         value={observacao}
-                        onChange={(e) =>
-                            setObservacao(
-                                e.target.value
-                            )
-                        }
+                        onChange={(e) => setObservacao(e.target.value)}
                         multiline
                         rows={3}
                         fullWidth
@@ -517,8 +496,9 @@ function Ordem() {
                             marginTop: 2,
                         }}
                     />
-
                 </Paper>
+
+                {/* ================= VEÍCULO ================= */}
 
                 <Paper
                     elevation={1}
@@ -527,7 +507,6 @@ function Ordem() {
                         marginBottom: 3,
                     }}
                 >
-
                     <Typography
                         variant="h6"
                         sx={{
@@ -546,18 +525,13 @@ function Ordem() {
                             flexWrap: "wrap",
                         }}
                     >
-
                         <TextField
                             label="Placa do veículo"
                             value={placaVeiculo}
                             onChange={(e) => {
-
-                                setPlacaVeiculo(
-                                    e.target.value.toUpperCase()
-                                );
+                                setPlacaVeiculo(e.target.value.toUpperCase());
 
                                 setVeiculo(null);
-
                                 setErroVeiculo("");
                             }}
                             sx={{
@@ -577,36 +551,23 @@ function Ordem() {
                         >
                             Consultar
                         </Button>
-
                     </Box>
 
                     {veiculo && (
-
-                        <Chip
-                            label={`Veículo encontrado: ${veiculo.placaVeiculo}`}
-                            color="success"
-                            variant="outlined"
-                            sx={{
-                                marginTop: 2,
-                            }}
+                        <InfoBox
+                            titulo="Veículo encontrado"
+                            campos={[
+                                { label: "Placa", value: veiculo.placaVeiculo },
+                                { label: "Veículo", value: veiculo.tipoVeiculo },
+                                { label: "Capacidade", value: veiculo.capacidadeVeiculo },
+                            ]}
                         />
-
                     )}
 
-                    {erroVeiculo && (
-
-                        <Alert
-                            severity="error"
-                            sx={{
-                                marginTop: 2,
-                            }}
-                        >
-                            {erroVeiculo}
-                        </Alert>
-
-                    )}
-
+                    {erroVeiculo && <ErroBox mensagem={erroVeiculo} />}
                 </Paper>
+
+                {/* ================= PRODUTOS ================= */}
 
                 <Paper
                     elevation={1}
@@ -615,7 +576,6 @@ function Ordem() {
                         marginBottom: 3,
                     }}
                 >
-
                     <Typography
                         variant="h6"
                         sx={{
@@ -627,55 +587,41 @@ function Ordem() {
                     </Typography>
 
                     {itens.map((item, index) => (
-
                         <Box
                             key={index}
                             sx={{
                                 marginBottom: 3,
                             }}
                         >
-
                             {index > 0 && (
-
                                 <Divider
                                     sx={{
                                         marginBottom: 3,
                                     }}
                                 />
-
                             )}
 
                             <Box
                                 sx={{
                                     display: "grid",
-
                                     gridTemplateColumns: {
                                         xs: "1fr",
                                         md: "2fr 1fr 1fr auto",
                                     },
-
                                     gap: 2,
-
                                     alignItems: "center",
                                 }}
                             >
-
                                 <TextField
                                     label="Código do produto"
                                     value={item.codigoProduto}
-                                    onChange={(e) => {
-
+                                    onChange={(e) =>
                                         atualizarItem(index, {
-
-                                            codigoProduto:
-                                                e.target.value,
-
+                                            codigoProduto: e.target.value,
                                             produto: null,
-
                                             erro: "",
-
-                                        });
-                                    }}
+                                        })
+                                    }
                                     type="number"
                                     fullWidth
                                 />
@@ -685,14 +631,8 @@ function Ordem() {
                                     type="number"
                                     value={item.quantidade}
                                     onChange={(e) =>
-
                                         atualizarItem(index, {
-
-                                            quantidade:
-                                                Number(
-                                                    e.target.value
-                                                ),
-
+                                            quantidade: Number(e.target.value),
                                         })
                                     }
                                     fullWidth
@@ -703,14 +643,8 @@ function Ordem() {
                                     type="number"
                                     value={item.valorUnitario}
                                     onChange={(e) =>
-
                                         atualizarItem(index, {
-
-                                            valorUnitario:
-                                                Number(
-                                                    e.target.value
-                                                ),
-
+                                            valorUnitario: Number(e.target.value),
                                         })
                                     }
                                     fullWidth
@@ -718,56 +652,37 @@ function Ordem() {
 
                                 <Button
                                     variant="outlined"
-                                    onClick={() =>
-                                        buscarProduto(index)
-                                    }
+                                    onClick={() => buscarProduto(index)}
                                     sx={{
                                         height: 56,
                                     }}
                                 >
                                     Consultar
                                 </Button>
-
                             </Box>
 
                             {item.produto && (
-
-                                <Chip
-                                    label={`Produto ${item.produto.codigoProduto} encontrado`}
-                                    color="success"
-                                    variant="outlined"
-                                    sx={{
-                                        marginTop: 2,
-                                    }}
+                                <InfoBox
+                                    titulo="Produto encontrado"
+                                    campos={[
+                                        { label: "Código", value: item.produto.codigoProduto },
+                                        { label: "Nome Produto", value: item.produto.nomeProduto },
+                                        { label: "Medida", value: item.produto.medidaProduto },
+                                        { label: "Peso", value: item.produto.pesoProduto },
+                                    ]}
                                 />
-
                             )}
 
-                            {item.erro && (
-
-                                <Alert
-                                    severity="error"
-                                    sx={{
-                                        marginTop: 2,
-                                    }}
-                                >
-                                    {item.erro}
-                                </Alert>
-
-                            )}
-
+                            {item.erro && <ErroBox mensagem={item.erro} />}
                         </Box>
-
                     ))}
 
-                    <Button
-                        variant="outlined"
-                        onClick={adicionarItem}
-                    >
+                    <Button variant="outlined" onClick={adicionarItem}>
                         Adicionar produto
                     </Button>
-
                 </Paper>
+
+                {/* ================= CRIAR ORDEM ================= */}
 
                 <Box
                     sx={{
@@ -776,7 +691,6 @@ function Ordem() {
                         marginBottom: 4,
                     }}
                 >
-
                     <Button
                         variant="contained"
                         size="large"
@@ -784,18 +698,13 @@ function Ordem() {
                         disabled={
                             !cliente ||
                             !veiculo ||
-                            itens.some(
-                                (item) => !item.produto
-                            )
+                            itens.some((item) => !item.produto)
                         }
                     >
                         Criar Ordem
                     </Button>
-
                 </Box>
-
             </Box>
-
         </Box>
     );
 }
