@@ -38,7 +38,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         // Não existe token
         if (authorizationHeader == null ||
-            !authorizationHeader.startsWith("Bearer ")) {
+                !authorizationHeader.startsWith("Bearer ")) {
 
             filterChain.doFilter(request, response);
             return;
@@ -50,20 +50,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             String nomeUsuario = jwtService.getNomeUsuario(token);
 
-            UsernamePasswordAuthenticationToken authentication =
-                    new UsernamePasswordAuthenticationToken(
-                            nomeUsuario,
-                            null,
-                            java.util.Collections.emptyList()
-                    );
+            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                    nomeUsuario,
+                    null,
+                    java.util.Collections.emptyList());
 
             SecurityContextHolder
                     .getContext()
                     .setAuthentication(authentication);
 
         } catch (Exception e) {
-
-            // Token inválido
+            logger.warn("Falha ao validar JWT: " + e.getClass().getSimpleName() + " - " + e.getMessage());
             SecurityContextHolder.clearContext();
         }
 

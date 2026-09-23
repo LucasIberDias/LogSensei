@@ -113,10 +113,7 @@ function Cargas() {
     async function carregarCargas() {
         try {
             const response = await api.get("/cargas");
-
-            console.log("RESPOSTA DA API:", response.data);
-            console.log("É ARRAY?", Array.isArray(response.data));
-
+            
             if (Array.isArray(response.data)) {
                 setCargas(response.data);
             } else {
