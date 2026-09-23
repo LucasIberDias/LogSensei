@@ -10,6 +10,7 @@ import DashboardIcon from "@mui/icons-material/Dashboard";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 import LocalShippingIcon from "@mui/icons-material/LocalShipping";
 import FactCheckIcon from "@mui/icons-material/FactCheck";
+import AddBoxIcon from "@mui/icons-material/AddBox";
 
 import { useNavigate } from "react-router-dom";
 
@@ -90,6 +91,14 @@ function Sidebar() {
                     <ListItemText
                         primary="Controle"
                     />
+                </ListItemButton>
+
+                <ListItemButton onClick={() => navigate("/cadastros")}>
+                    <ListItemIcon>
+                        <AddBoxIcon />
+                    </ListItemIcon>
+
+                    <ListItemText primary="Cadastros" />
                 </ListItemButton>
 
             </List>

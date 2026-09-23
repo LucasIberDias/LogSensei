@@ -10,6 +10,7 @@ import Dashboard from "../pages/Dashboard/Dashboard";
 import Ordem from "../pages/Ordem/Ordem";
 import Cargas from "../pages/Cargas/Cargas";
 import ControleCarregamento from "../pages/Controle/Controle";
+import Cadastros from "../pages/Cadastros/Cadastros";
 
 function AppRoutes() {
 
@@ -57,7 +58,9 @@ function AppRoutes() {
                     path="/controle-carregamento"
                     element={<ControleCarregamento />}
                 />
-
+                <Route path="/cadastros" 
+                element={<Cadastros />} 
+                />
             </Routes>
 
         </BrowserRouter>
