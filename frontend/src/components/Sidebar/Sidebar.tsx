@@ -9,6 +9,7 @@ import {
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 import LocalShippingIcon from "@mui/icons-material/LocalShipping";
+import FactCheckIcon from "@mui/icons-material/FactCheck";
 
 import { useNavigate } from "react-router-dom";
 
@@ -17,6 +18,7 @@ function Sidebar() {
     const navigate = useNavigate();
 
     return (
+
         <Box
             sx={{
                 width: 240,
@@ -31,6 +33,8 @@ function Sidebar() {
 
             <List>
 
+                {/* Dashboard */}
+
                 <ListItemButton
                     onClick={() => navigate("/")}
                 >
@@ -38,8 +42,13 @@ function Sidebar() {
                         <DashboardIcon />
                     </ListItemIcon>
 
-                    <ListItemText primary="Dashboard" />
+                    <ListItemText
+                        primary="Dashboard"
+                    />
                 </ListItemButton>
+
+
+                {/* Ordem */}
 
                 <ListItemButton
                     onClick={() => navigate("/ordem")}
@@ -48,8 +57,13 @@ function Sidebar() {
                         <AssignmentIcon />
                     </ListItemIcon>
 
-                    <ListItemText primary="Ordem" />
+                    <ListItemText
+                        primary="Ordem"
+                    />
                 </ListItemButton>
+
+
+                {/* Cargas */}
 
                 <ListItemButton
                     onClick={() => navigate("/cargas")}
@@ -58,7 +72,24 @@ function Sidebar() {
                         <LocalShippingIcon />
                     </ListItemIcon>
 
-                    <ListItemText primary="Cargas" />
+                    <ListItemText
+                        primary="Cargas"
+                    />
+                </ListItemButton>
+
+
+                {/* Controle de Carregamento */}
+
+                <ListItemButton
+                    onClick={() => navigate("/controle-carregamento")}
+                >
+                    <ListItemIcon>
+                        <FactCheckIcon />
+                    </ListItemIcon>
+
+                    <ListItemText
+                        primary="Controle"
+                    />
                 </ListItemButton>
 
             </List>

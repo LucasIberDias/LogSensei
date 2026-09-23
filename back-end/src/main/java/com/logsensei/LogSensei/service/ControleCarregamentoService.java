@@ -1,5 +1,7 @@
 package com.logsensei.LogSensei.service;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import com.logsensei.LogSensei.repository.ControleCarregamentoRepository;
@@ -19,7 +21,8 @@ public class ControleCarregamentoService {
     // Atualizar controle de carregamento
     public void AtualizarControleCarregamento(AtualizarControleCarregamentoRequestDTO request) {
         // Pego o controle de carregamento que será atualizada
-        ControleCarregamento controleCarregamento = controleCarregamentoRepository.findById(request.getIdCarregamento()).get();
+        ControleCarregamento controleCarregamento = controleCarregamentoRepository.findById(request.getIdCarregamento())
+                .get();
 
         // Verifico se tem dados dentro antes de salvar, se não mantem a informação
         // antiga
@@ -53,5 +56,10 @@ public class ControleCarregamentoService {
 
         // Salvo o controle de carregamento
         controleCarregamentoRepository.save(controleCarregamento);
+    }
+
+    // Listar controles
+    public List<ControleCarregamento> listarControles() {
+        return controleCarregamentoRepository.findAll();
     }
 }

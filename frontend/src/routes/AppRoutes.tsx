@@ -9,6 +9,7 @@ import Login from "../pages/Login/Login";
 import Dashboard from "../pages/Dashboard/Dashboard";
 import Ordem from "../pages/Ordem/Ordem";
 import Cargas from "../pages/Cargas/Cargas";
+import ControleCarregamento from "../pages/Controle/Controle";
 
 function AppRoutes() {
 
@@ -50,6 +51,11 @@ function AppRoutes() {
                             ? <Cargas />
                             : <Navigate to="/login" />
                     }
+                />
+
+                <Route
+                    path="/controle-carregamento"
+                    element={<ControleCarregamento />}
                 />
 
             </Routes>
