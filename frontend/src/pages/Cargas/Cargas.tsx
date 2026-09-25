@@ -137,19 +137,15 @@ function Cargas() {
     function formatarDataBR(data: string | null | undefined) {
         if (!data) return "";
 
-        const dataParte = data.split("T")[0];
-        const partes = dataParte.split("-");
+        const [ano, mes, dia] = data.split("T")[0].split("-");
 
-        if (partes.length === 3) {
-            const [ano, mes, dia] = partes;
-            return `${dia}/${mes}/${ano}`;
-        }
-
-        return data;
+        return `${dia}/${mes}/${ano}`;
     }
 
     function imprimirCarga(carga: Carga) {
         const ordem = carga.ordemCarregamento;
+
+        const dataEntregaFormatada = formatarDataBR(ordem.dataEntrega);
 
         const janela = window.open("", "_blank");
 
@@ -168,10 +164,9 @@ function Cargas() {
             second: "2-digit",
         });
 
-        const dataEntregaFormatada = formatarDataBR(ordem.dataEntrega);
-
         /*
          * Quantidade fixa de linhas de produtos.
+         * A impressão sempre terá 15 linhas.
          */
         const TOTAL_LINHAS_PRODUTOS = 15;
 
@@ -233,7 +228,9 @@ function Cargas() {
             .join("");
 
         /*
-         * Observação
+         * Observação.
+         * Mantemos a faixa vermelha mesmo quando não houver observação,
+         * para preservar o mesmo layout da folha impressa.
          */
         const observacao = ordem.observacao?.trim() || "";
 
@@ -252,9 +249,12 @@ function Cargas() {
 
             <style>
 
+                /*
+                 * CONFIGURAÇÃO DA PÁGINA
+                 */
                 @page {
                     size: A4 portrait;
-                    margin: 8mm;
+                    margin: 0;
                 }
 
                 * {
@@ -263,7 +263,7 @@ function Cargas() {
 
                 html,
                 body {
-                    margin: 0;
+                    margin: 25px;
                     padding: 0;
                     width: 100%;
                     height: 100%;
@@ -276,22 +276,21 @@ function Cargas() {
                 }
 
                 /*
-                 * CAIXA PRINCIPAL DA FOLHA
+                 * FOLHA
                  */
                 .folha {
-                    width: 194mm;
-                    min-height: 281mm;
-
+                    width: 210mm;
+                    min-height: 297mm;
                     margin: 0 auto;
-                    padding: 6mm;
-
+                    padding: 0;
                     background: #fff;
-
-                    border: 1px solid #000;
                 }
 
                 /*
                  * CABEÇALHO
+                 *
+                 * Logo à esquerda
+                 * Título centralizado
                  */
                 .cabecalho {
                     width: 100%;
@@ -353,7 +352,6 @@ function Cargas() {
                 td,
                 th {
                     border: 1px solid #000;
-
                     padding: 0;
 
                     font-size: 12px;
@@ -409,6 +407,9 @@ function Cargas() {
                     padding-right: 5px;
                 }
 
+                /*
+                 * LINHA DO PEDIDO
+                 */
                 .pedido {
                     width: 55%;
                     text-align: left;
@@ -441,6 +442,9 @@ function Cargas() {
                     font-weight: bold;
                 }
 
+                /*
+                 * Largura das colunas
+                 */
                 .produtos th:nth-child(1),
                 .produtos td:nth-child(1) {
                     width: 75px;
@@ -490,7 +494,6 @@ function Cargas() {
 
                 .descricao {
                     text-align: center;
-
                     padding-left: 3px;
                     padding-right: 3px;
                 }
@@ -509,7 +512,7 @@ function Cargas() {
                 }
 
                 /*
-                 * DATA DE ENTREGA
+                 * FAIXA DE ENTREGA
                  */
                 .entrega {
                     width: 100%;
@@ -560,7 +563,7 @@ function Cargas() {
                 }
 
                 /*
-                 * DATA E HORA DA IMPRESSÃO
+                 * TABELA DE DATA/HORA DA IMPRESSÃO
                  */
                 .impressao {
                     width: 228px;
@@ -628,6 +631,9 @@ function Cargas() {
                     padding-left: 5px;
                 }
 
+                /*
+                 * PLACA
+                 */
                 .assinatura tr:last-child td:last-child {
                     background: #d9d9d9;
                 }
@@ -639,23 +645,24 @@ function Cargas() {
 
                     html,
                     body {
-                        width: 100%;
-                        height: 100%;
+                        width: 210mm;
+                        height: 297mm;
 
                         margin: 0;
                         padding: 0;
                     }
 
                     .folha {
-                        width: 194mm;
-                        min-height: 281mm;
+                        width: 210mm;
+                        min-height: 297mm;
 
-                        margin: 0 auto;
-                        padding: 6mm;
-
-                        border: 1px solid #000;
+                        margin: 0;
+                        padding: 0;
                     }
 
+                    /*
+                     * Garante que as cores apareçam na impressão.
+                     */
                     * {
                         -webkit-print-color-adjust: exact !important;
                         print-color-adjust: exact !important;
@@ -714,6 +721,8 @@ function Cargas() {
 
                 <table class="dados">
 
+                    <!-- CLIENTE -->
+
                     <tr>
 
                         <td class="campo">
@@ -727,6 +736,8 @@ function Cargas() {
                     </tr>
 
 
+                    <!-- ENDEREÇO -->
+
                     <tr>
 
                         <td class="campo">
@@ -739,6 +750,8 @@ function Cargas() {
 
                     </tr>
 
+
+                    <!-- PEDIDO / VENCIMENTO -->
 
                     <tr>
 
@@ -809,14 +822,18 @@ function Cargas() {
                 <!-- DATA DE ENTREGA -->
 
                 <div class="entrega">
-                    ENTREGAR ${dataEntregaFormatada}
+
+                    ENTREGAR ${dataEntregaFormatada || ""}
+
                 </div>
 
 
                 <!-- OBSERVAÇÃO -->
 
                 <div class="obs">
+
                     OBS: ${observacao}
+
                 </div>
 
 
@@ -888,8 +905,14 @@ function Cargas() {
         </html>
     `);
 
+        /*
+         * Finaliza o documento da nova janela.
+         */
         janela.document.close();
 
+        /*
+         * Abre automaticamente a tela de impressão.
+         */
         janela.focus();
 
         setTimeout(() => {
