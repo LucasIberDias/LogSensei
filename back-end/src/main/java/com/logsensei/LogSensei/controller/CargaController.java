@@ -20,9 +20,11 @@ public class CargaController {
     }
 
     // Atualizar Carga
-    @PatchMapping 
-    public ResponseEntity<Void> atualizarCarga(@RequestBody AtualizarCargaRequestDTO request) {
-        cargaService.AtualizarCarga(request);
+    @PatchMapping
+    public ResponseEntity<Void> atualizarCarga(
+            @RequestBody AtualizarCargaRequestDTO request) {
+
+        cargaService.atualizarCarga(request);
 
         return ResponseEntity.noContent().build();
     }
@@ -30,7 +32,6 @@ public class CargaController {
     @GetMapping
     public ResponseEntity<List<Carga>> listarCargas() {
         return ResponseEntity.ok(
-            cargaService.listarCargas()
-        );
+                cargaService.listarCargas());
     }
 }

@@ -1,155 +1,197 @@
 package com.logsensei.LogSensei.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.logsensei.LogSensei.dto.carga.AtualizarCargaRequestDTO;
+import com.logsensei.LogSensei.dto.item.ItemRequestDTO;
+import com.logsensei.LogSensei.model.Carga;
+import com.logsensei.LogSensei.model.ControleCarregamento;
+import com.logsensei.LogSensei.model.Item;
+import com.logsensei.LogSensei.model.OrdemCarregamento;
+import com.logsensei.LogSensei.model.Produto;
 import com.logsensei.LogSensei.repository.CargaRepository;
-
+import com.logsensei.LogSensei.repository.ClienteRepository;
+import com.logsensei.LogSensei.repository.ControleCarregamentoRepository;
+import com.logsensei.LogSensei.repository.ProdutoRepository;
+import com.logsensei.LogSensei.repository.UsuarioRepository;
 import com.logsensei.LogSensei.repository.VeiculoRepository;
 
-import com.logsensei.LogSensei.repository.ControleCarregamentoRepository;
-
-import com.logsensei.LogSensei.dto.carga.AtualizarCargaRequestDTO;
-
-import com.logsensei.LogSensei.model.Carga;
-
-import com.logsensei.LogSensei.model.ControleCarregamento;
-
 @Service
-
 public class CargaService {
 
     private final CargaRepository cargaRepository;
-
+    private final ClienteRepository clienteRepository;
     private final VeiculoRepository veiculoRepository;
-
+    private final UsuarioRepository usuarioRepository;
+    private final ProdutoRepository produtoRepository;
     private final ControleCarregamentoRepository controleCarregamentoRepository;
 
     public CargaService(
-
             CargaRepository cargaRepository,
-
+            ClienteRepository clienteRepository,
             VeiculoRepository veiculoRepository,
-
-            ControleCarregamentoRepository controleCarregamentoRepository
-
-    ) {
+            UsuarioRepository usuarioRepository,
+            ProdutoRepository produtoRepository,
+            ControleCarregamentoRepository controleCarregamentoRepository) {
 
         this.cargaRepository = cargaRepository;
-
+        this.clienteRepository = clienteRepository;
         this.veiculoRepository = veiculoRepository;
-
+        this.usuarioRepository = usuarioRepository;
+        this.produtoRepository = produtoRepository;
         this.controleCarregamentoRepository = controleCarregamentoRepository;
-
     }
 
-    // Atualizar carga
+    public void atualizarCarga(AtualizarCargaRequestDTO request) {
 
-    public void AtualizarCarga(AtualizarCargaRequestDTO request) {
+        Carga carga = cargaRepository.findById(request.getIdCarga())
+                .orElseThrow(() -> new RuntimeException("Carga não encontrada"));
 
-        // Pego a carga que será atualizada
-
-        Carga carga = cargaRepository.findById(request.getIdCarga()).get();
-
-        // Verifico se tem dados dentro antes de salvar, se não mantem a informação
-        // antiga
+        OrdemCarregamento ordem = carga.getOrdemCarregamento();
 
         if (request.getLocalSaida() != null) {
-
             carga.setLocalSaida(request.getLocalSaida());
-
         }
 
         if (request.getTransportadora() != null) {
-
             carga.setTransportadora(request.getTransportadora());
-
         }
 
         if (request.getNotaFiscal() != null) {
-
             carga.setNotaFiscal(request.getNotaFiscal());
+        }
 
+        if (request.getCodigoCliente() != null) {
+
+            ordem.setCliente(
+                    clienteRepository.findByCodigoCliente(request.getCodigoCliente())
+                            .orElseThrow(() -> new RuntimeException("Cliente não encontrado")));
+        }
+
+        if (request.getEndereco() != null) {
+            ordem.setEndereco(request.getEndereco());
+        }
+
+        if (request.getNumeroPedido() != null) {
+            ordem.setNumeroPedido(request.getNumeroPedido());
+        }
+
+        if (request.getVencimento() != null) {
+            ordem.setVencimento(request.getVencimento());
+        }
+
+        if (request.getObservacao() != null) {
+            ordem.setObservacao(request.getObservacao());
+        }
+
+        if (request.getDataEntrega() != null) {
+            ordem.setDataEntrega(request.getDataEntrega());
         }
 
         if (request.getMotorista() != null) {
-
-            carga.getOrdemCarregamento().setMotorista(request.getMotorista());
-
+            ordem.setMotorista(request.getMotorista());
         }
 
         if (request.getPlacaVeiculo() != null) {
 
-            carga.getOrdemCarregamento().setVeiculo(
-                    veiculoRepository.findByPlacaVeiculo(request.getPlacaVeiculo()).get());
-
+            if (request.getPlacaVeiculo().isBlank()) {
+                ordem.setVeiculo(null);
+            } else {
+                ordem.setVeiculo(
+                        veiculoRepository.findByPlacaVeiculo(request.getPlacaVeiculo())
+                                .orElseThrow(() -> new RuntimeException("Veículo não encontrado")));
+            }
         }
 
-        // Recalculo o aproveitamento caso o veículo tenha sido alterado
+        if (request.getIdUsuario() != null) {
 
-        if (carga.getOrdemCarregamento().getVeiculo() != null) {
+            ordem.setUsuario(
+                    usuarioRepository.findById(request.getIdUsuario())
+                            .orElseThrow(() -> new RuntimeException("Usuário não encontrado")));
+        }
 
-            Double aproveitamento = (carga.getPesoTotal() /
-                    carga.getOrdemCarregamento().getVeiculo().getCapacidadeVeiculo()) * 100;
+        if (request.getItens() != null) {
+
+            ordem.getItem().clear();
+
+            for (ItemRequestDTO itemRequest : request.getItens()) {
+
+                Produto produto = produtoRepository
+                        .findByCodigoProduto(itemRequest.getCodigoProduto())
+                        .orElseThrow(() -> new RuntimeException("Produto não encontrado"));
+
+                Item item = new Item();
+
+                item.setQuantidade(itemRequest.getQuantidade());
+                item.setValorUnitario(itemRequest.getValorUnitario());
+                item.setProduto(produto);
+                item.setOrdemCarregamento(ordem);
+
+                ordem.getItem().add(item);
+            }
+        }
+
+        Double pesoTotal = 0.0;
+
+        for (Item item : ordem.getItem()) {
+
+            pesoTotal += item.getProduto().getPesoProduto()
+                    * item.getQuantidade();
+        }
+
+        carga.setPesoTotal(pesoTotal);
+
+        if (ordem.getVeiculo() != null
+                && ordem.getVeiculo().getCapacidadeVeiculo() != null
+                && ordem.getVeiculo().getCapacidadeVeiculo() > 0) {
+
+            Double aproveitamento = (pesoTotal / ordem.getVeiculo().getCapacidadeVeiculo()) * 100;
 
             carga.setAproveitamento(aproveitamento);
 
+        } else {
+
+            carga.setAproveitamento(0.0);
         }
 
-        // Verifico se motorista, veiculo e local de saida foram informados
+        boolean possuiMotorista = ordem.getMotorista() != null
+                && !ordem.getMotorista().isBlank();
 
-        if (carga.getOrdemCarregamento().getMotorista() != null && carga.getOrdemCarregamento().getVeiculo() != null
-                && carga.getLocalSaida() != null) {
+        boolean possuiVeiculo = ordem.getVeiculo() != null;
 
-            // Quando for informado motorista, veiculo e local de saida o status vai mudar
-            // para próximo
+        boolean possuiLocalSaida = carga.getLocalSaida() != null
+                && !carga.getLocalSaida().isBlank();
 
+        boolean possuiNotaFiscal = carga.getNotaFiscal() != null
+                && !carga.getNotaFiscal().isBlank();
+
+        if (possuiMotorista && possuiVeiculo && possuiLocalSaida) {
             carga.setStatus("PRÓXIMO");
-
+        } else {
+            carga.setStatus("PENDENTE");
         }
 
-        // Verifico se foi informado nota fiscal
-
-        if (carga.getNotaFiscal() != null && carga.getStatus().equals("PRÓXIMO")) {
-
-            // Define os status como entregue
-
+        if (possuiNotaFiscal && carga.getStatus().equals("PRÓXIMO")) {
             carga.setStatus("ENTREGUE");
-
         }
-
-        // Salvo a carga com suas novas informações
 
         cargaRepository.save(carga);
 
-        // Se o status for entregue e não existir um controle de carregamento com essa
-        // carga, então será gerado um
-
-        if (carga.getStatus().equals("ENTREGUE") && !controleCarregamentoRepository.existsByCarga(carga)) {
-
-            // Crio o controle de carregamento
+        if (carga.getStatus().equals("ENTREGUE")
+                && !controleCarregamentoRepository.existsByCarga(carga)) {
 
             ControleCarregamento controleCarregamento = new ControleCarregamento();
 
-            // Coloco a carga do controle de carregamento
-
             controleCarregamento.setCarga(carga);
 
-            // Salvo o controle de carregamento
-
             controleCarregamentoRepository.save(controleCarregamento);
-
         }
-
     }
-
-    // Busca e lista todas as cargas
 
     public List<Carga> listarCargas() {
-
         return cargaRepository.findAll();
-
     }
-
 }
