@@ -30,7 +30,7 @@ public class SecurityConfig {
         http
             .csrf(csrf -> csrf.disable())
 
-            .cors(cors -> {})
+            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
 
             .sessionManagement(session ->
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -38,13 +38,10 @@ public class SecurityConfig {
 
             .authorizeHttpRequests(auth -> auth
 
-                // Tudo relacionado ao login fica público
                 .requestMatchers("/auth/**").permitAll()
 
-                // Permite o preflight do navegador
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
-                // O restante exige JWT
                 .anyRequest().authenticated()
             )
 
@@ -65,7 +62,10 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
 
         configuration.setAllowedOrigins(
-            List.of("http://localhost:5173")
+            List.of(
+                "http://localhost:5173",
+                "https://logsensei-frontend.discloud.app"
+            )
         );
 
         configuration.setAllowedMethods(
@@ -82,6 +82,8 @@ public class SecurityConfig {
         configuration.setAllowedHeaders(
             List.of("*")
         );
+
+        configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source =
             new UrlBasedCorsConfigurationSource();

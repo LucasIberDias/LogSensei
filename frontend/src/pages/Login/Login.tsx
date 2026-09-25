@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 
 import {
     Box,
@@ -17,8 +16,6 @@ import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { login } from "../../services/authService";
 
 function Login() {
-
-    const navigate = useNavigate();
 
     const [nomeUsuario, setNomeUsuario] = useState("");
     const [senhaUsuario, setSenhaUsuario] = useState("");
