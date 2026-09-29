@@ -21,9 +21,7 @@ public class CargaController {
 
     // Atualizar Carga
     @PatchMapping
-    public ResponseEntity<Void> atualizarCarga(
-            @RequestBody AtualizarCargaRequestDTO request) {
-
+    public ResponseEntity<Void> atualizarCarga(@RequestBody AtualizarCargaRequestDTO request) {
         cargaService.atualizarCarga(request);
 
         return ResponseEntity.noContent().build();

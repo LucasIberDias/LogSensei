@@ -25,6 +25,7 @@ import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
 import EventAvailableRoundedIcon from "@mui/icons-material/EventAvailableRounded";
 import InboxRoundedIcon from "@mui/icons-material/InboxRounded";
 import SpeedRoundedIcon from "@mui/icons-material/SpeedRounded";
+import CancelRoundedIcon from "@mui/icons-material/CancelRounded";
 
 import Header from "../../components/Header/Header";
 import Sidebar from "../../components/Sidebar/Sidebar";
@@ -59,6 +60,7 @@ const palette = {
     pendente: { main: "#f59e0b", bg: "#fef6e7" }, // âmbar
     proxima: { main: "#8b5cf6", bg: "#f3eefe" }, // roxo
     entregue: { main: "#16a34a", bg: "#eaf7ee" }, // verde
+    cancelada: { main: "#dc2626", bg: "#fdecec" }, // vermelho
 };
 
 function statusColor(status: string) {
@@ -66,6 +68,7 @@ function statusColor(status: string) {
     if (s === "ENTREGUE") return { color: "success" as const };
     if (s === "PENDENTE") return { color: "warning" as const };
     if (s === "PRÓXIMO") return { color: "secondary" as const };
+    if (s === "CANCELADA") return { color: "error" as const };
     return { color: "default" as const };
 }
 
@@ -165,8 +168,19 @@ function Dashboard() {
         (carga) => carga.status?.toUpperCase() === "ENTREGUE"
     ).length;
 
-    // Calcula o aproveitamento médio
-    const cargasComAproveitamento = cargas.filter(
+    // Quantidade de cargas canceladas
+    const cargasCanceladas = cargas.filter(
+        (carga) => carga.status?.toUpperCase() === "CANCELADA"
+    ).length;
+
+    // Cargas "válidas" para fins estatísticos (aproveitamento e percentual entregue)
+    // -> ignora tudo que foi cancelada
+    const cargasNaoCanceladas = cargas.filter(
+        (carga) => carga.status?.toUpperCase() !== "CANCELADA"
+    );
+
+    // Calcula o aproveitamento médio (desconsiderando canceladas)
+    const cargasComAproveitamento = cargasNaoCanceladas.filter(
         (carga) =>
             carga.aproveitamento !== null &&
             carga.aproveitamento !== undefined
@@ -190,8 +204,12 @@ function Dashboard() {
     // Data atual no formato YYYY-MM-DD
     const hoje = new Date().toISOString().split("T")[0];
 
-    // Entregas agendadas para hoje
+    // Entregas agendadas para hoje (cargas canceladas nunca entram aqui)
     const entregasHoje = cargas.filter((carga) => {
+        if (carga.status?.toUpperCase() === "CANCELADA") {
+            return false;
+        }
+
         if (!carga.ordemCarregamento?.dataEntrega) {
             return false;
         }
@@ -199,8 +217,11 @@ function Dashboard() {
         return carga.ordemCarregamento.dataEntrega.substring(0, 10) === hoje;
     });
 
+    // Percentual entregue tem como base as cargas não canceladas
     const percentualEntregue =
-        totalCargas > 0 ? (cargasEntregues / totalCargas) * 100 : 0;
+        cargasNaoCanceladas.length > 0
+            ? (cargasEntregues / cargasNaoCanceladas.length) * 100
+            : 0;
 
     return (
         <Box>
@@ -284,6 +305,16 @@ function Dashboard() {
                                     value={cargasEntregues}
                                     icon={<CheckCircleRoundedIcon />}
                                     tone={palette.entregue}
+                                />
+                            </Grid>
+
+                            {/* Novo card: cargas canceladas */}
+                            <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+                                <StatCard
+                                    label="Cargas canceladas"
+                                    value={cargasCanceladas}
+                                    icon={<CancelRoundedIcon />}
+                                    tone={palette.cancelada}
                                 />
                             </Grid>
                         </Grid>

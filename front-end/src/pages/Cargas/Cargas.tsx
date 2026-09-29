@@ -69,15 +69,16 @@ interface Carga {
 const STATUS_PROXIMO = "PRÓXIMO";
 const STATUS_PENDENTE = "PENDENTE";
 const STATUS_ENTREGUE = "ENTREGUE";
+const STATUS_CANCELADA = "CANCELADA"; 
 
-const ORDEM_STATUS = [STATUS_PROXIMO, STATUS_PENDENTE, STATUS_ENTREGUE];
+const ORDEM_STATUS = [STATUS_PROXIMO, STATUS_PENDENTE, STATUS_ENTREGUE, STATUS_CANCELADA];
 
 const STATUS_FILTROS = [
     { valor: STATUS_PROXIMO, label: "Próximo" },
     { valor: STATUS_PENDENTE, label: "Pendente" },
     { valor: STATUS_ENTREGUE, label: "Entregue" },
+    { valor: STATUS_CANCELADA, label: "Cancelada" }, 
 ];
-
 // Logo da Agrícola Andreis em base64, usada no cabeçalho da folha impressa.
 // Mantida como constante fora do componente para não ser recriada a cada render.
 const LOGO_ANDREIS_BASE64 =
@@ -101,10 +102,11 @@ function Cargas() {
     // Controla quais status estão visíveis na listagem.
     // Por padrão todos os três aparecem.
     const [statusVisiveis, setStatusVisiveis] = useState<Record<string, boolean>>({
-        [STATUS_PROXIMO]: true,
-        [STATUS_PENDENTE]: true,
-        [STATUS_ENTREGUE]: true,
-    });
+    [STATUS_PROXIMO]: true,
+    [STATUS_PENDENTE]: true,
+    [STATUS_ENTREGUE]: true,
+    [STATUS_CANCELADA]: false,
+});
 
     useEffect(() => {
         carregarCargas();
@@ -113,7 +115,7 @@ function Cargas() {
     async function carregarCargas() {
         try {
             const response = await api.get("/cargas");
-
+            
             if (Array.isArray(response.data)) {
                 setCargas(response.data);
             } else {
@@ -134,18 +136,8 @@ function Cargas() {
         }));
     }
 
-    function formatarDataBR(data: string | null | undefined) {
-        if (!data) return "";
-
-        const [ano, mes, dia] = data.split("T")[0].split("-");
-
-        return `${dia}/${mes}/${ano}`;
-    }
-
     function imprimirCarga(carga: Carga) {
         const ordem = carga.ordemCarregamento;
-
-        const dataEntregaFormatada = formatarDataBR(ordem.dataEntrega);
 
         const janela = window.open("", "_blank");
 
@@ -823,7 +815,7 @@ function Cargas() {
 
                 <div class="entrega">
 
-                    ENTREGAR ${dataEntregaFormatada || ""}
+                    ENTREGAR ${ordem.dataEntrega || ""}
 
                 </div>
 
@@ -1029,16 +1021,20 @@ function Cargas() {
     }
     function obterCorStatus(status: string) {
 
-        if (status === STATUS_ENTREGUE) {
-            return "success";
-        }
-
-        if (status === STATUS_PROXIMO) {
-            return "warning";
-        }
-
-        return "default";
+    if (status === STATUS_ENTREGUE) {
+        return "success";
     }
+
+    if (status === STATUS_PROXIMO) {
+        return "warning";
+    }
+
+    if (status === STATUS_CANCELADA) {
+        return "error"; 
+    }
+
+    return "default";
+}
 
     return (
         <Box>
