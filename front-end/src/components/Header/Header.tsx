@@ -17,31 +17,51 @@ function Header() {
 
     const nomeUsuario = localStorage.getItem("nomeUsuario");
 
+    const nomeFormatado = nomeUsuario
+        ? nomeUsuario.charAt(0).toUpperCase() + nomeUsuario.slice(1)
+        : "";
+
     return (
         <AppBar
             position="fixed"
             sx={{
                 height: "64px",
+                backgroundColor: "primary.main",
+                boxShadow: 2,
             }}
         >
             <Toolbar
                 sx={{
+                    height: "100%",
                     display: "flex",
                     justifyContent: "space-between",
-                    height: "100%",
+                    px: 3,
                 }}
             >
-                <Typography variant="h6">
+                <Typography
+                    variant="h6"
+                    sx={{
+                        fontWeight: 600,
+                    }}
+                >
                     LogSensei
                 </Typography>
 
-                <Typography variant="body1">
-                    {nomeUsuario}
+                <Typography
+                    variant="body1"
+                    sx={{
+                        fontWeight: 500,
+                    }}
+                >
+                    {nomeFormatado}
                 </Typography>
 
                 <Button
                     color="inherit"
                     onClick={handleLogout}
+                    sx={{
+                        fontWeight: 600,
+                    }}
                 >
                     Sair
                 </Button>

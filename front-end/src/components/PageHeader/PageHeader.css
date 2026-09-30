@@ -1,0 +1,60 @@
+.page-header {
+    position: relative;
+    min-height: 110px;
+    margin-bottom:25px;
+    overflow: hidden;
+
+    display: flex;
+    align-items: center;
+
+    border-radius: 12px;
+}
+
+.page-header-content {
+    position: relative;
+    z-index: 2;
+}
+
+.page-header-title {
+    font-weight: 700 !important;
+    margin-bottom: 4px !important;
+}
+
+.page-header-description {
+    color: #64748b;
+}
+
+.page-header-image {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+
+    width: 180px;
+    height: 180px;
+
+    object-fit: contain;
+    opacity: 0.8;
+    pointer-events: none;
+}
+
+@media (max-width: 600px) {
+    .page-header {
+        padding: 20px;
+    }
+
+    .page-header-image {
+        width: 120px;
+        height: 120px;
+        right: -20px;
+        opacity: 0.5;
+    }
+
+    .page-header-title {
+        font-size: 28px !important;
+    }
+
+    .page-header-description {
+        max-width: 70%;
+    }
+}

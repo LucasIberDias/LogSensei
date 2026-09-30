@@ -34,8 +34,6 @@ function Sidebar() {
 
             <List>
 
-                {/* Dashboard */}
-
                 <ListItemButton
                     onClick={() => navigate("/")}
                 >
@@ -47,9 +45,6 @@ function Sidebar() {
                         primary="Dashboard"
                     />
                 </ListItemButton>
-
-
-                {/* Ordem */}
 
                 <ListItemButton
                     onClick={() => navigate("/ordem")}
@@ -63,9 +58,6 @@ function Sidebar() {
                     />
                 </ListItemButton>
 
-
-                {/* Cargas */}
-
                 <ListItemButton
                     onClick={() => navigate("/cargas")}
                 >
@@ -77,9 +69,6 @@ function Sidebar() {
                         primary="Cargas"
                     />
                 </ListItemButton>
-
-
-                {/* Controle de Carregamento */}
 
                 <ListItemButton
                     onClick={() => navigate("/controle-carregamento")}

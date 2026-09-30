@@ -1,0 +1,42 @@
+.card-cadastro {
+    padding: 32px;
+    text-align: center;
+    cursor: pointer;
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 180px;
+}
+
+.card-cadastro:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    transform: translateY(-2px);
+}
+
+.card-cadastro-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+}
+
+.card-cadastro-icon svg {
+    font-size: 50px;
+}
+
+.card-cadastro-image {
+    width: 60px;
+    height: 60px;
+    object-fit: contain;
+    margin-bottom: 16px;
+}
+
+.card-cadastro-title {
+    margin-bottom: 4px !important;
+}
+
+.card-cadastro-description {
+    font-size: 14px;
+}
