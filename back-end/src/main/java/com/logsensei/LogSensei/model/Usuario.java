@@ -29,4 +29,5 @@ public class Usuario {
     @NotBlank 
     private String senhaUsuario;
 
+    private String cargo;
 }
