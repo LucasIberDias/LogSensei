@@ -28,14 +28,17 @@ function SidebarItem({ icon, text, path }: SidebarItemProps) {
                 "&.Mui-selected": {
                     backgroundColor: "primary.light",
                     color: "white",
+                    borderRadius: 3,
                 },
 
                 "&.Mui-selected:hover": {
                     backgroundColor: "primary.light",
+                    
                 },
 
                 "&:hover": {
                     backgroundColor: "primary.light",
+                    borderRadius: 3,
                 },
             }}
         >
