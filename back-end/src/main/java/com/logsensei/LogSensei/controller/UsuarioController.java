@@ -21,8 +21,7 @@ public class UsuarioController {
 
     // UC-GU01: Cadastrar Usuario
     @PostMapping
-    public ResponseEntity<Void> cadastrarUsuario(
-@Valid @RequestBody UsuarioRequestDTO request, @RequestParam Long idUsuario) {
+    public ResponseEntity<Void> cadastrarUsuario(@Valid @RequestBody UsuarioRequestDTO request, @RequestParam Long idUsuario) {
         usuarioService.cadastrarUsuario(request, idUsuario);
 
         return ResponseEntity.ok().build();
