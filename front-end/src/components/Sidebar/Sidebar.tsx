@@ -1,9 +1,6 @@
 import {
     Box,
     List,
-    ListItemButton,
-    ListItemIcon,
-    ListItemText,
 } from "@mui/material";
 
 import DashboardIcon from "@mui/icons-material/Dashboard";
@@ -12,14 +9,11 @@ import LocalShippingIcon from "@mui/icons-material/LocalShipping";
 import FactCheckIcon from "@mui/icons-material/FactCheck";
 import AddBoxIcon from "@mui/icons-material/AddBox";
 
-import { useNavigate } from "react-router-dom";
+import SidebarItem from "./SidebarItem";
 
 function Sidebar() {
 
-    const navigate = useNavigate();
-
     return (
-
         <Box
             sx={{
                 width: 240,
@@ -27,71 +21,43 @@ function Sidebar() {
                 position: "fixed",
                 left: 0,
                 top: 64,
-                borderRight: "1px solid #ddd",
-                backgroundColor: "#fff",
+                backgroundColor: "primary.main",
+                color: "white",
             }}
         >
-
             <List>
 
-                <ListItemButton
-                    onClick={() => navigate("/")}
-                >
-                    <ListItemIcon>
-                        <DashboardIcon />
-                    </ListItemIcon>
+                <SidebarItem
+                    icon={<DashboardIcon />}
+                    text="Dashboard"
+                    path="/"
+                />
 
-                    <ListItemText
-                        primary="Dashboard"
-                    />
-                </ListItemButton>
+                <SidebarItem
+                    icon={<AssignmentIcon />}
+                    text="Ordem"
+                    path="/ordem"
+                />
 
-                <ListItemButton
-                    onClick={() => navigate("/ordem")}
-                >
-                    <ListItemIcon>
-                        <AssignmentIcon />
-                    </ListItemIcon>
+                <SidebarItem
+                    icon={<LocalShippingIcon />}
+                    text="Cargas"
+                    path="/cargas"
+                />
 
-                    <ListItemText
-                        primary="Ordem"
-                    />
-                </ListItemButton>
+                <SidebarItem
+                    icon={<FactCheckIcon />}
+                    text="Controle"
+                    path="/controle-carregamento"
+                />
 
-                <ListItemButton
-                    onClick={() => navigate("/cargas")}
-                >
-                    <ListItemIcon>
-                        <LocalShippingIcon />
-                    </ListItemIcon>
-
-                    <ListItemText
-                        primary="Cargas"
-                    />
-                </ListItemButton>
-
-                <ListItemButton
-                    onClick={() => navigate("/controle-carregamento")}
-                >
-                    <ListItemIcon>
-                        <FactCheckIcon />
-                    </ListItemIcon>
-
-                    <ListItemText
-                        primary="Controle"
-                    />
-                </ListItemButton>
-
-                <ListItemButton onClick={() => navigate("/cadastros")}>
-                    <ListItemIcon>
-                        <AddBoxIcon />
-                    </ListItemIcon>
-
-                    <ListItemText primary="Cadastros" />
-                </ListItemButton>
+                <SidebarItem
+                    icon={<AddBoxIcon />}
+                    text="Cadastros"
+                    path="/cadastros"
+                />
 
             </List>
-
         </Box>
     );
 }

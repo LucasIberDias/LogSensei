@@ -1,3 +1,6 @@
+import LogoutIcon from "@mui/icons-material/Logout";
+import PersonIcon from "@mui/icons-material/Person";
+
 import {
     AppBar,
     Toolbar,
@@ -16,6 +19,7 @@ function Header() {
     }
 
     const nomeUsuario = localStorage.getItem("nomeUsuario");
+    const cargoUsuario = localStorage.getItem("cargoUsuario");
 
     const nomeFormatado = nomeUsuario
         ? nomeUsuario.charAt(0).toUpperCase() + nomeUsuario.slice(1)
@@ -51,14 +55,19 @@ function Header() {
                     variant="body1"
                     sx={{
                         fontWeight: 500,
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 1,
                     }}
                 >
-                    {nomeFormatado}
+                    <PersonIcon fontSize="small" />
+                    {nomeFormatado + " - " + cargoUsuario}
                 </Typography>
 
                 <Button
                     color="inherit"
                     onClick={handleLogout}
+                    startIcon={<LogoutIcon />}
                     sx={{
                         fontWeight: 600,
                     }}
