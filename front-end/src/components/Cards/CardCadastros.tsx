@@ -1,5 +1,13 @@
 import type { ReactNode } from "react";
-import { Paper, Typography } from "@mui/material";
+
+import {
+    Box,
+    Paper,
+    Typography,
+} from "@mui/material";
+
+import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
+
 import "./CardCadastro.css";
 
 interface CardCadastroProps {
@@ -21,29 +29,68 @@ export default function CardCadastro({
         <Paper
             className="card-cadastro"
             onClick={onClick}
+            elevation={0}
+            sx={{
+                backgroundColor: "background.paper",
+                border: 1,
+                borderColor: "divider",
+
+                "&:hover": {
+                    boxShadow: 3,
+                },
+            }}
         >
-            {image ? (
-                <img
-                    src={image}
-                    alt={title}
-                    className="card-cadastro-image"
-                />
-            ) : (
-                <div className="card-cadastro-icon">
-                    {icon}
-                </div>
-            )}
+            <Box className="card-cadastro-left">
 
-            <Typography variant="h6" className="card-cadastro-title">
-                {title}
-            </Typography>
+                {image ? (
+                    <Box
+                        component="img"
+                        src={image}
+                        alt={title}
+                        className="card-cadastro-image"
+                    />
+                ) : (
+                    <Box
+                        className="card-cadastro-icon"
+                        sx={{
+                            backgroundColor: "secondary.light",
+                            color: "primary.main",
+                        }}
+                    >
+                        {icon}
+                    </Box>
+                )}
 
-            <Typography
-                color="text.secondary"
-                className="card-cadastro-description"
-            >
-                {description}
-            </Typography>
+                <Box className="card-cadastro-content">
+
+                    <Typography
+                        variant="h6"
+                        className="card-cadastro-title"
+                        sx={{
+                            color: "text.primary",
+                        }}
+                    >
+                        {title}
+                    </Typography>
+
+                    <Typography
+                        className="card-cadastro-description"
+                        sx={{
+                            color: "text.secondary",
+                        }}
+                    >
+                        {description}
+                    </Typography>
+
+                </Box>
+            </Box>
+
+            <ArrowForwardIosIcon
+                className="card-cadastro-arrow"
+                sx={{
+                    color: "primary.light",
+                }}
+            />
         </Paper>
     );
 }
