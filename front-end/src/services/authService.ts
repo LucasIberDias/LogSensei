@@ -12,6 +12,7 @@ async function login(nomeUsuario: string, senhaUsuario: string) {
     localStorage.setItem("token", response.data.token);
     localStorage.setItem("idUsuario", response.data.idUsuario);
     localStorage.setItem("nomeUsuario", response.data.nomeUsuario);
+    localStorage.setItem("cargo", response.data.cargo);
 
     return response.data;
 }
