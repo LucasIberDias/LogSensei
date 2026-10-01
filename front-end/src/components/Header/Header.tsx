@@ -14,12 +14,13 @@ function Header() {
         localStorage.removeItem("token");
         localStorage.removeItem("idUsuario");
         localStorage.removeItem("nomeUsuario");
+        localStorage.removeItem("cargo");
 
         window.location.href = "/login";
     }
 
     const nomeUsuario = localStorage.getItem("nomeUsuario");
-    const cargoUsuario = localStorage.getItem("cargoUsuario");
+    const cargoUsuario = localStorage.getItem("cargo");
 
     const nomeFormatado = nomeUsuario
         ? nomeUsuario.charAt(0).toUpperCase() + nomeUsuario.slice(1)
