@@ -1,15 +1,23 @@
-import { Box } from "@mui/material";
+import { useState } from "react";
+
+import {
+    Box,
+    Button,
+} from "@mui/material";
 
 import Header from "../../../components/Header/Header";
 import Sidebar from "../../../components/Sidebar/Sidebar";
 import PageHeader from "../../../components/PageHeader/PageHeader";
 
+import FormUsuario from "./FormUsuario";
+
 function Usuarios() {
+
+    const [abrirFormulario, setAbrirFormulario] = useState(false);
+
     return (
         <Box>
-
             <Header />
-
             <Sidebar />
 
             <Box
@@ -23,11 +31,27 @@ function Usuarios() {
                     paddingTop: 10,
                 }}
             >
+                <Box
+                    sx={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "flex-start",
+                        marginBottom: 3,
+                    }}
+                >
+                    <PageHeader
+                        title="Usuários"
+                        description="Gerencie os usuários do sistema"
+                    />
 
-                <PageHeader
-                    title="Usuarios"
-                    description="Gerencie os usuarios do sistema"
-                />
+                    <Button
+                        variant="contained"
+                        sx={{ mt: 3 }}
+                        onClick={() => setAbrirFormulario(true)}
+                    >
+                        Novo usuário
+                    </Button>
+                </Box>
 
                 <Box
                     sx={{
@@ -39,12 +63,14 @@ function Usuarios() {
                         gap: 3,
                     }}
                 >
-
-
                 </Box>
 
-            </Box>
+                <FormUsuario
+                    abrir={abrirFormulario}
+                    fechar={() => setAbrirFormulario(false)}
+                />
 
+            </Box>
         </Box>
     );
 }

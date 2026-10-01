@@ -1,9 +1,12 @@
 package com.logsensei.LogSensei.controller;
 
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.logsensei.LogSensei.dto.usuario.UsuarioRequestDTO;
+import com.logsensei.LogSensei.model.Usuario;
 import com.logsensei.LogSensei.service.UsuarioService;
 
 import jakarta.validation.Valid;
@@ -18,11 +21,19 @@ public class UsuarioController {
         this.usuarioService = usuarioService;
     }
 
-    // UC-GU01: Cadastrar Usuario
+    // UC-GU01: Cadastrar Usuarios
     @PostMapping
-    public ResponseEntity<Void> cadastrarUsuario(@Valid @RequestBody UsuarioRequestDTO request, @RequestParam Long idUsuario) {
+    public ResponseEntity<Void> cadastrarUsuario(@Valid @RequestBody UsuarioRequestDTO request,
+            @RequestParam Long idUsuario) {
         usuarioService.cadastrarUsuario(request, idUsuario);
 
         return ResponseEntity.ok().build();
     }
+
+    // UC-GU02: Listar Usuarios
+    @GetMapping
+    public ResponseEntity<List<Usuario>> listarCargas() {
+        return ResponseEntity.ok(usuarioService.listarUsuarios());
+    }
+    
 }

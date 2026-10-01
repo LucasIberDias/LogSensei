@@ -1,15 +1,18 @@
 package com.logsensei.LogSensei.service;
 
+import java.util.List;
+
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.logsensei.LogSensei.dto.usuario.UsuarioRequestDTO;
+import com.logsensei.LogSensei.model.Carga;
 import com.logsensei.LogSensei.model.Usuario;
 import com.logsensei.LogSensei.repository.UsuarioRepository;
 
 @Service
 public class UsuarioService {
-    
+
     private final UsuarioRepository usuarioRepository;
     private final BCryptPasswordEncoder passwordEncoder;
 
@@ -18,7 +21,7 @@ public class UsuarioService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    // UC-GU01: Cadastrar Usuario
+    // UC-GU01: Cadastrar Usuarios
     public void cadastrarUsuario(UsuarioRequestDTO request, Long idUsuario) {
         // Verifico se o usuario tem permissão para cadastrar Usuario
         if (!usuarioRepository.findById(idUsuario).get().getCargo().equals("GERENTE LOGISTICA")) {
@@ -38,5 +41,10 @@ public class UsuarioService {
 
         // Salvo no banco o usuário criado
         usuarioRepository.save(usuario);
+    }
+
+    //UC-GU02: Listar Usuarios
+    public List<Usuario> listarUsuarios() {
+        return usuarioRepository.findAll();
     }
 }
