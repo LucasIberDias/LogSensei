@@ -25,26 +25,31 @@ function SidebarItem({ icon, text, path }: SidebarItemProps) {
             selected={selected}
             onClick={() => navigate(path)}
             sx={{
+                mx: 1,
+                borderRadius: 2,
+                borderLeft: "4px solid transparent",
+
                 "&.Mui-selected": {
                     backgroundColor: "primary.light",
                     color: "white",
-                    borderRadius: 3,
+                    borderLeftColor: "secondary.main",
                 },
 
                 "&.Mui-selected:hover": {
                     backgroundColor: "primary.light",
-                    
+                    borderLeftColor: "secondary.main",
                 },
 
                 "&:hover": {
                     backgroundColor: "primary.light",
-                    borderRadius: 3,
+                    borderLeftColor: "secondary.main",
                 },
             }}
         >
             <ListItemIcon
                 sx={{
                     color: "inherit",
+                    minWidth: 40,
                 }}
             >
                 {icon}
