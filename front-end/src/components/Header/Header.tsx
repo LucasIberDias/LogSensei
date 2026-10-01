@@ -26,6 +26,17 @@ function Header() {
         ? nomeUsuario.charAt(0).toUpperCase() + nomeUsuario.slice(1)
         : "";
 
+    const cargoFormatado = cargoUsuario
+        ? cargoUsuario
+            .toLowerCase()
+            .split(" ")
+            .map(
+                palavra =>
+                    palavra.charAt(0).toUpperCase() + palavra.slice(1)
+            )
+            .join(" ")
+        : "";
+
     return (
         <AppBar
             position="fixed"
@@ -62,7 +73,7 @@ function Header() {
                     }}
                 >
                     <PersonIcon fontSize="small" />
-                    {nomeFormatado + " - " + cargoUsuario}
+                    {nomeFormatado + " - " + cargoFormatado}
                 </Typography>
 
                 <Button
