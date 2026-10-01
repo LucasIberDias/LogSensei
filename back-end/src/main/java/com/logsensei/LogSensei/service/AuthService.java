@@ -35,10 +35,7 @@ public class AuthService {
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
 
         // Verifica se as senhas batem
-        if (!passwordEncoder.matches(
-                request.getSenhaUsuario(),
-                usuario.getSenhaUsuario())) {
-
+        if (!passwordEncoder.matches(request.getSenhaUsuario(), usuario.getSenhaUsuario())) {
             throw new RuntimeException("Senha incorreta");
         }
 
@@ -51,7 +48,8 @@ public class AuthService {
         return new LoginResponseDTO(
                 usuario.getIdUsuario(),
                 usuario.getNomeUsuario(),
-                token
+                token,
+                usuario.getCargo()
         );
     }
 }
