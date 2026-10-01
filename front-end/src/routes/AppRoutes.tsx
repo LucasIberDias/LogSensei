@@ -11,15 +11,17 @@ import Ordem from "../pages/Ordem/Ordem";
 import Cargas from "../pages/Cargas/Cargas";
 import ControleCarregamento from "../pages/Controle/Controle";
 import Cadastros from "../pages/Cadastros/Cadastros";
+import Usuarios from "../pages/Cadastros/Usuarios/Usuarios";
+
+import { temPermissao } from "../services/permissionService";
 
 function AppRoutes() {
-
     const token = localStorage.getItem("token");
 
+    const podeAcessarUsuarios = temPermissao("GERENTE LOGISTICA") || temPermissao("DESENVOLVEDOR");
+
     return (
-
         <BrowserRouter>
-
             <Routes>
 
                 <Route
@@ -56,13 +58,32 @@ function AppRoutes() {
 
                 <Route
                     path="/controle-carregamento"
-                    element={<ControleCarregamento />}
+                    element={
+                        token
+                            ? <ControleCarregamento />
+                            : <Navigate to="/login" />
+                    }
                 />
-                <Route path="/cadastros" 
-                element={<Cadastros />} 
-                />
-            </Routes>
 
+                <Route
+                    path="/cadastros"
+                    element={
+                        token
+                            ? <Cadastros />
+                            : <Navigate to="/login" />
+                    }
+                />
+
+                <Route
+                    path="/usuarios"
+                    element={
+                        token && podeAcessarUsuarios
+                            ? <Usuarios />
+                            : <Navigate to="/" replace />
+                    }
+                />
+
+            </Routes>
         </BrowserRouter>
     );
 }

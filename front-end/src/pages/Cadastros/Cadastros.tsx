@@ -1,4 +1,9 @@
-import { Box} from "@mui/material";
+import { Box } from "@mui/material";
+import { useNavigate } from "react-router-dom";
+
+import { temPermissao } from "../../services/permissionService";
+
+
 
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 
@@ -8,6 +13,8 @@ import CardCadastro from "../../components/Cards/CardCadastros";
 import PageHeader from "../../components/PageHeader/PageHeader";
 
 function Cadastros() {
+    const navigate = useNavigate();
+
     return (
         <Box>
 
@@ -27,7 +34,7 @@ function Cadastros() {
                 }}
             >
 
-                <PageHeader 
+                <PageHeader
                     title="Cadastros"
                     description="Gerencie os cadastros do sistema"
                 />
@@ -43,11 +50,14 @@ function Cadastros() {
                     }}
                 >
 
-                    <CardCadastro
-                        title="Usuários"
-                        description="Controle de Usuários"
-                        icon={<PersonAddIcon />}
-                    />
+                    {(temPermissao("GERENTE LOGISTICA") || temPermissao("DESENVOLVEDOR")) && (
+                        <CardCadastro
+                            title="Usuários"
+                            description="Controle de Usuários"
+                            icon={<PersonAddIcon />}
+                            onClick={() => navigate("/usuarios")}
+                        />
+                    )}
 
                 </Box>
 
