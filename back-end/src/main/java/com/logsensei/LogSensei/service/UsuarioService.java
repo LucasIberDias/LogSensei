@@ -6,7 +6,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.logsensei.LogSensei.dto.usuario.UsuarioRequestDTO;
-import com.logsensei.LogSensei.model.Carga;
 import com.logsensei.LogSensei.model.Usuario;
 import com.logsensei.LogSensei.repository.UsuarioRepository;
 

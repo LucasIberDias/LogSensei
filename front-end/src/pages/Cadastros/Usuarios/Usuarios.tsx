@@ -8,6 +8,7 @@ import {
 import Header from "../../../components/Header/Header";
 import Sidebar from "../../../components/Sidebar/Sidebar";
 import PageHeader from "../../../components/PageHeader/PageHeader";
+import ListaUsuarios from "./ListaUsuario";
 
 import FormUsuario from "./FormUsuario";
 
@@ -64,6 +65,8 @@ function Usuarios() {
                     }}
                 >
                 </Box>
+
+                <ListaUsuarios />
 
                 <FormUsuario
                     abrir={abrirFormulario}
