@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
 import {
+    Alert,
     Button,
     Dialog,
     DialogTitle,
@@ -13,7 +14,10 @@ import {
     MenuItem,
 } from "@mui/material";
 
-import { buscarCargos, cadastrarUsuario } from "../../../services/usuariosService";
+import {
+    buscarCargos,
+    cadastrarUsuario
+} from "../../../services/usuariosService";
 
 interface FormUsuarioProps {
     abrir: boolean;
@@ -26,10 +30,14 @@ function FormUsuario({ abrir, fechar }: FormUsuarioProps) {
     const [senhaUsuario, setSenhaUsuario] = useState("");
     const [cargos, setCargos] = useState<string[]>([]);
     const [cargo, setCargo] = useState("");
+    const [erro, setErro] = useState("");
+
     const idUsuario = Number(localStorage.getItem("idUsuario"));
 
     useEffect(() => {
         if (!abrir) return;
+
+        setErro("");
 
         async function carregarCargos() {
             try {
@@ -37,6 +45,7 @@ function FormUsuario({ abrir, fechar }: FormUsuarioProps) {
                 setCargos(resposta);
             } catch (error) {
                 console.error("Erro ao buscar cargos:", error);
+                setErro("Não foi possível carregar os cargos.");
             }
         }
 
@@ -44,12 +53,29 @@ function FormUsuario({ abrir, fechar }: FormUsuarioProps) {
     }, [abrir]);
 
     async function cadastrarNovoUsuario() {
+
+        setErro("");
+
         try {
-            await cadastrarUsuario(nomeUsuario, senhaUsuario, cargo, idUsuario);
+
+            await cadastrarUsuario(
+                nomeUsuario.toLowerCase(),
+                senhaUsuario,
+                cargo.toUpperCase(),
+                idUsuario
+            );
 
             fechar();
-        } catch (error) {
+
+        } catch (error: any) {
+
             console.error("Erro ao cadastrar usuário:", error);
+
+            if (error.response?.status === 403) {
+                setErro("Erro ao cadastrar usuários.");
+            } else {
+                setErro("Não foi possível cadastrar o usuário.");
+            }
         }
     }
 
@@ -65,6 +91,12 @@ function FormUsuario({ abrir, fechar }: FormUsuarioProps) {
             </DialogTitle>
 
             <DialogContent>
+
+                {erro && (
+                    <Alert severity="error" sx={{ mt: 1 }}>
+                        {erro}
+                    </Alert>
+                )}
 
                 <TextField
                     fullWidth

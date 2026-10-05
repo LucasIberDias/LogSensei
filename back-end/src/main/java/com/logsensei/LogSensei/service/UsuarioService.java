@@ -22,8 +22,11 @@ public class UsuarioService {
 
     // UC-GU01: Cadastrar Usuarios
     public void cadastrarUsuario(UsuarioRequestDTO request, Long idUsuario) {
+        // Pego o usuario que pretende criar o novo usuario
+        Usuario usuarioAutenticado = usuarioRepository.findById(idUsuario).get();
+
         // Verifico se o usuario tem permissão para cadastrar Usuario
-        if (!usuarioRepository.findById(idUsuario).get().getCargo().equals("GERENTE LOGISTICA")) {
+        if (usuarioAutenticado.getCargo().equals("GERENTE LOGISTICA") && usuarioAutenticado.getCargo().equals("DESENVOLVEDOR")) {
             throw new RuntimeException("Você não tem permissão para cadastrar um usuário");
         }
 
