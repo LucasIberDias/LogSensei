@@ -35,5 +35,10 @@ public class UsuarioController {
     public ResponseEntity<List<Usuario>> listarCargas() {
         return ResponseEntity.ok(usuarioService.listarUsuarios());
     }
-    
+
+    // UC-GU04: Buscar Cargos
+    @GetMapping("/cargos")
+    public ResponseEntity<List<String>> buscarCargos() {
+        return ResponseEntity.ok(usuarioService.buscarCargos());
+    }
 }

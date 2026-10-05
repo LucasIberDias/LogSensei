@@ -42,8 +42,13 @@ public class UsuarioService {
         usuarioRepository.save(usuario);
     }
 
-    //UC-GU02: Listar Usuarios
+    // UC-GU02: Listar Usuarios
     public List<Usuario> listarUsuarios() {
         return usuarioRepository.findAll();
+    }
+
+    // UC-GU04: Buscar Cargos
+    public List<String> buscarCargos() {
+        return usuarioRepository.buscarCargos();
     }
 }
