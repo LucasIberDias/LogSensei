@@ -1,5 +1,7 @@
 package com.logsensei.LogSensei.service;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import com.logsensei.LogSensei.dto.cliente.ClienteRequestDTO;
@@ -15,8 +17,8 @@ public class ClienteService {
         this.clienteRepository = clienteRepository;
     }
 
-    // Criar cliente
-    public void criarCliente(ClienteRequestDTO request) {
+    // UC-GC01: Cadastrar cliente
+    public void cadastrarCliente(ClienteRequestDTO request) {
 
         // Crio o objeto que vai receber as informações
         Cliente cliente = new Cliente();
@@ -39,10 +41,14 @@ public class ClienteService {
         clienteRepository.save(cliente);
     }
 
+    // UC-GC02: Listar Clientes
+    public List<Cliente> listarClientes() {
+        return clienteRepository.findAll();
+    }
+
     // Busca cliente pelo codigo
-    public Cliente buscarCliente(Long codigoCliente){
-        return clienteRepository.findByCodigoCliente(codigoCliente).orElseThrow(() ->
-            new RuntimeException("Cliente não possui cadastro")
-        );
+    public Cliente buscarCliente(Long codigoCliente) {
+        return clienteRepository.findByCodigoCliente(codigoCliente)
+                .orElseThrow(() -> new RuntimeException("Cliente não possui cadastro"));
     }
 }

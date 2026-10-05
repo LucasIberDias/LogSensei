@@ -8,8 +8,7 @@ import {
 import Header from "../../../components/Header/Header";
 import Sidebar from "../../../components/Sidebar/Sidebar";
 import PageHeader from "../../../components/PageHeader/PageHeader";
-
-
+import ListaClientes from "./ListaClientes";
 
 function Clientes() {
 
@@ -17,7 +16,9 @@ function Clientes() {
 
     return (
         <Box>
+
             <Header />
+
             <Sidebar />
 
             <Box
@@ -31,6 +32,7 @@ function Clientes() {
                     paddingTop: 10,
                 }}
             >
+
                 <Box
                     sx={{
                         display: "flex",
@@ -39,6 +41,7 @@ function Clientes() {
                         marginBottom: 3,
                     }}
                 >
+
                     <PageHeader
                         title="Clientes"
                         description="Gerencie os clientes do sistema"
@@ -51,23 +54,15 @@ function Clientes() {
                     >
                         Novo Cliente
                     </Button>
+
                 </Box>
 
-                <Box
-                    sx={{
-                        display: "grid",
-                        gridTemplateColumns: {
-                            xs: "1fr",
-                            md: "repeat(3, 1fr)",
-                        },
-                        gap: 3,
-                    }}
-                >
+                <Box>
+                    <ListaClientes />
                 </Box>
-
-
 
             </Box>
+
         </Box>
     );
 }

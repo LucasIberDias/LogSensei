@@ -4,6 +4,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 import com.logsensei.LogSensei.dto.cliente.ClienteRequestDTO;
 import com.logsensei.LogSensei.service.ClienteService;
 
@@ -19,12 +21,18 @@ public class ClienteController {
         this.clienteService = clienteService;
     }
 
-    // Criar cliente
+    // UC-GC01: Cadastrar cliente
     @PostMapping
     public ResponseEntity<Void> criarVeiculo(@RequestBody ClienteRequestDTO request) {
-        clienteService.criarCliente(request);
+        clienteService.cadastrarCliente(request);
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    // UC-GC02: Listar clientes
+    @GetMapping
+    public ResponseEntity<List<Cliente>> listarClientes() {
+        return ResponseEntity.ok(clienteService.listarClientes());
     }
 
     // Buscar cliente

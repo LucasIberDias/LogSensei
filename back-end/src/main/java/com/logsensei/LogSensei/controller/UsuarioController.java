@@ -32,7 +32,7 @@ public ResponseEntity<Void> cadastrarUsuario(@Valid @RequestBody UsuarioRequestD
 
     // UC-GU02: Listar Usuarios
     @GetMapping
-    public ResponseEntity<List<Usuario>> listarCargas() {
+    public ResponseEntity<List<Usuario>> listarUsuarios() {
         return ResponseEntity.ok(usuarioService.listarUsuarios());
     }
 
