@@ -17,6 +17,7 @@ public class AuthController {
         this.authService = authService;
     }
 
+    // UC-GU05: Login
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDTO> login(
             @RequestBody LoginRequestDTO request) {

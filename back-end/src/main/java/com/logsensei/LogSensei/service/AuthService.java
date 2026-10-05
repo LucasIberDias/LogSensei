@@ -26,7 +26,7 @@ public class AuthService {
         this.jwtService = jwtService;
     }
 
-    // Login de usuario
+    // UC-GU05: Login
     public LoginResponseDTO login(LoginRequestDTO request) {
 
         // Pega o usuario se ele existir pelo nome
