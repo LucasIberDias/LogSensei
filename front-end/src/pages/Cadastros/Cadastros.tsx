@@ -6,6 +6,7 @@ import { temPermissao } from "../../services/permissionService";
 
 
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
+import GroupsIcon from "@mui/icons-material/Groups";
 
 import Header from "../../components/Header/Header";
 import Sidebar from "../../components/Sidebar/Sidebar";
@@ -56,6 +57,15 @@ function Cadastros() {
                             description="Controle de Usuários"
                             icon={<PersonAddIcon />}
                             onClick={() => navigate("/usuarios")}
+                        />
+                    )}
+
+                    {(temPermissao("GERENTE LOGISTICA") || temPermissao("DESENVOLVEDOR") || temPermissao("ANALISTA")) && (
+                        <CardCadastro
+                            title="Clientes"
+                            description="Controle de Clientes"
+                            icon={<GroupsIcon />}
+                            onClick={() => navigate("/clientes")}
                         />
                     )}
 

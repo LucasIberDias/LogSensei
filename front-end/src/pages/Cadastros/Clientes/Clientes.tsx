@@ -40,8 +40,8 @@ function Clientes() {
                     }}
                 >
                     <PageHeader
-                        title="Usuários"
-                        description="Gerencie os usuários do sistema"
+                        title="Clientes"
+                        description="Gerencie os clientes do sistema"
                     />
 
                     <Button
@@ -49,7 +49,7 @@ function Clientes() {
                         sx={{ mt: 3 }}
                         onClick={() => setAbrirFormulario(true)}
                     >
-                        Novo usuário
+                        Novo Cliente
                     </Button>
                 </Box>
 
