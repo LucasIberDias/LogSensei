@@ -31,7 +31,6 @@ public class ProdutoController {
     // UC-GP02: Listar Produtos
     @GetMapping
     public ResponseEntity<List<Produto>> listarProdutos() {
-
         return ResponseEntity.ok(produtoService.ListarProdutos());
     }
 

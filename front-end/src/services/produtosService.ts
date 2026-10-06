@@ -15,7 +15,7 @@ export async function cadastrarProduto(
 
 // UC-GP02: Listar Produtos
 export async function listarProdutos(): Promise<Produto[]> {
-    const response = await api.get<Produto[]>("/podutos");
+    const response = await api.get<Produto[]>("/produtos");
 
     return response.data;
 }
