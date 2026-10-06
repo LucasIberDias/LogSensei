@@ -1,5 +1,7 @@
 package com.logsensei.LogSensei.service;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import com.logsensei.LogSensei.dto.produto.ProdutoRequestDTO;
@@ -15,7 +17,7 @@ public class ProdutoService {
         this.produtoRepository = produtoRepository;
     }
 
-    // Criar produto
+    // UC-GP01: Cadastrar Produto
     public void criarProduto(ProdutoRequestDTO request) {
 
         // Crio o objeto que vai receber as informações
@@ -37,10 +39,14 @@ public class ProdutoService {
         produtoRepository.save(produto);
     }
 
+    // UC-GP02: Listar Produtos
+    public List<Produto> ListarProdutos() {
+        return produtoRepository.findAll();
+    }
+
     // Busca produto pelo codigo
-    public Produto buscarProduto(Long codigoProduto){
-        return produtoRepository.findByCodigoProduto(codigoProduto).orElseThrow(() ->
-            new RuntimeException("Produto não possui cadastro")
-        );
+    public Produto buscarProduto(Long codigoProduto) {
+        return produtoRepository.findByCodigoProduto(codigoProduto)
+                .orElseThrow(() -> new RuntimeException("Produto não possui cadastro"));
     }
 }

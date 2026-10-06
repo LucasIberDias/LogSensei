@@ -13,6 +13,7 @@ import ControleCarregamento from "../pages/Controle/Controle";
 import Cadastros from "../pages/Cadastros/Cadastros";
 import Usuarios from "../pages/Cadastros/Usuarios/Usuarios";
 import Clientes from "../pages/Cadastros/Clientes/Clientes";
+import Produtos from "../pages/Cadastros/Produtos/Produtos";
 
 
 import { temPermissao } from "../services/permissionService";
@@ -21,7 +22,7 @@ function AppRoutes() {
     const token = localStorage.getItem("token");
 
     const podeAcessarUsuarios = temPermissao("GERENTE LOGISTICA") || temPermissao("DESENVOLVEDOR");
-    const podeAcessarClientes = temPermissao("GERENTE LOGISTICA") || temPermissao("DESENVOLVEDOR") || temPermissao("ANALISTA");
+    const podeAcessarPadrao = temPermissao("GERENTE LOGISTICA") || temPermissao("DESENVOLVEDOR") || temPermissao("ANALISTA");
 
     return (
         <BrowserRouter>
@@ -89,8 +90,17 @@ function AppRoutes() {
                 <Route
                     path="/clientes"
                     element={
-                        token && podeAcessarClientes
+                        token && podeAcessarPadrao
                             ? <Clientes />
+                            : <Navigate to="/" replace />
+                    }
+                />
+
+                <Route
+                    path="/produtos"
+                    element={
+                        token && podeAcessarPadrao
+                            ? <Produtos />
                             : <Navigate to="/" replace />
                     }
                 />
