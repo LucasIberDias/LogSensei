@@ -23,7 +23,7 @@ public class ClienteController {
 
     // UC-GC01: Cadastrar cliente
     @PostMapping
-    public ResponseEntity<Void> criarVeiculo(@RequestBody ClienteRequestDTO request) {
+    public ResponseEntity<Void> CadastrarCliente(@RequestBody ClienteRequestDTO request) {
         clienteService.cadastrarCliente(request);
 
         return ResponseEntity.status(HttpStatus.CREATED).build();

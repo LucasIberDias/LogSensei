@@ -8,13 +8,16 @@ import {
 import Header from "../../../components/Header/Header";
 import Sidebar from "../../../components/Sidebar/Sidebar";
 import PageHeader from "../../../components/PageHeader/PageHeader";
+
 import ListaClientes from "./ListaClientes";
+import FormCliente from "./FormClientes";
 
 function Clientes() {
 
     const [abrirFormulario, setAbrirFormulario] = useState(false);
 
     return (
+
         <Box>
 
             <Header />
@@ -62,6 +65,11 @@ function Clientes() {
                 </Box>
 
             </Box>
+
+            <FormCliente
+                abrir={abrirFormulario}
+                fechar={() => setAbrirFormulario(false)}
+            />
 
         </Box>
     );
