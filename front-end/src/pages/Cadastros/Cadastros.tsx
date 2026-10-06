@@ -8,6 +8,7 @@ import { temPermissao } from "../../services/permissionService";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import GroupsIcon from "@mui/icons-material/Groups";
 import Inventory2Icon from "@mui/icons-material/Inventory2";
+import DirectionsCarIcon from "@mui/icons-material/DirectionsCar";
 
 import Header from "../../components/Header/Header";
 import Sidebar from "../../components/Sidebar/Sidebar";
@@ -76,6 +77,15 @@ function Cadastros() {
                             description="Controle de Produtos"
                             icon={<Inventory2Icon />}
                             onClick={() => navigate("/produtos")}
+                        />
+                    )}
+
+                    {(temPermissao("GERENTE LOGISTICA") || temPermissao("DESENVOLVEDOR") || temPermissao("ANALISTA")) && (
+                        <CardCadastro
+                            title="Veículos"
+                            description="Controle de Veículos"
+                            icon={<DirectionsCarIcon />}
+                            onClick={() => navigate("/veiculos")}
                         />
                     )}
 

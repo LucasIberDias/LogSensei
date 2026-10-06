@@ -14,6 +14,7 @@ import Cadastros from "../pages/Cadastros/Cadastros";
 import Usuarios from "../pages/Cadastros/Usuarios/Usuarios";
 import Clientes from "../pages/Cadastros/Clientes/Clientes";
 import Produtos from "../pages/Cadastros/Produtos/Produtos";
+import Veiculos from "../pages/Cadastros/Veiculos/Veiculos";
 
 
 import { temPermissao } from "../services/permissionService";
@@ -101,6 +102,15 @@ function AppRoutes() {
                     element={
                         token && podeAcessarPadrao
                             ? <Produtos />
+                            : <Navigate to="/" replace />
+                    }
+                />
+
+                <Route
+                    path="/veiculos"
+                    element={
+                        token && podeAcessarPadrao
+                            ? <Veiculos />
                             : <Navigate to="/" replace />
                     }
                 />

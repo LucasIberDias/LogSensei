@@ -1,5 +1,7 @@
 package com.logsensei.LogSensei.controller;
 
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,12 +20,18 @@ public class VeiculoController {
         this.veiculoService = veiculoService;
     }
 
-    // Criar veículo
+    // UC-GV01: Cadastrar Veiculos
     @PostMapping
     public ResponseEntity<Void> criarVeiculo(@RequestBody VeiculoRequestDTO request) {
         veiculoService.criarVeiculo(request);
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    // UC-GV02: Listar Veiculos
+    @GetMapping
+    public ResponseEntity<List<Veiculo>> listarClientes() {
+        return ResponseEntity.ok(veiculoService.listarVeiculos());
     }
 
     // Buscar veiculo

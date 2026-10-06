@@ -1,5 +1,7 @@
 package com.logsensei.LogSensei.service;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import com.logsensei.LogSensei.dto.veiculo.VeiculoRequestDTO;
@@ -15,7 +17,7 @@ public class VeiculoService {
         this.veiculoRepository = veiculoRepository;
     }
 
-    // Criar veículo
+    // UC-GV01: Cadastrar Veiculo
     public void criarVeiculo(VeiculoRequestDTO request) {
 
         // Crio o objeto que vai receber as informações
@@ -36,10 +38,14 @@ public class VeiculoService {
         veiculoRepository.save(veiculo);
     }
 
+    // UC-GV02: Listar Veiculos
+    public List<Veiculo> listarVeiculos() {
+        return veiculoRepository.findAll();
+    }
+
     // Busca veiculo pelo codigo
-    public Veiculo buscarVeiculo(String placaVeiculo){
-        return veiculoRepository.findByPlacaVeiculo(placaVeiculo).orElseThrow(() ->
-            new RuntimeException("Veiculo não cadastrado")
-        );
+    public Veiculo buscarVeiculo(String placaVeiculo) {
+        return veiculoRepository.findByPlacaVeiculo(placaVeiculo)
+                .orElseThrow(() -> new RuntimeException("Veiculo não cadastrado"));
     }
 }
