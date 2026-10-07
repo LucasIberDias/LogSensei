@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+
 import { Box } from "@mui/material";
 
 import type { Carga } from "../../types/carga";
@@ -6,6 +7,8 @@ import type { Carga } from "../../types/carga";
 import { listarCargas } from "../../services/cargasService";
 
 import ListaCargas from "./ListaCargas";
+import FormEditarCarga from "./FormEditarCarga";
+
 import Header from "../../components/Header/Header";
 import Sidebar from "../../components/Sidebar/Sidebar";
 import PageHeader from "../../components/PageHeader/PageHeader";
@@ -13,6 +16,10 @@ import PageHeader from "../../components/PageHeader/PageHeader";
 function Cargas() {
 
     const [cargas, setCargas] = useState<Carga[]>([]);
+    const [cargaSelecionada, setCargaSelecionada] =
+        useState<Carga | null>(null);
+
+    const [abrirFormulario, setAbrirFormulario] = useState(false);
 
     useEffect(() => {
         carregarCargas();
@@ -39,7 +46,6 @@ function Cargas() {
         <Box>
 
             <Header />
-
             <Sidebar />
 
             <Box
@@ -56,7 +62,7 @@ function Cargas() {
 
                 <PageHeader
                     title="Cargas"
-                    description="Visualize e Gerencie as cargas cadastradas"
+                    description="Visualize e gerencie as cargas cadastradas"
                 />
 
                 <Box
@@ -69,13 +75,30 @@ function Cargas() {
                     }}
                 >
 
-                    <ListaCargas cargas={cargas} />
+                    <ListaCargas
+                        cargas={cargas}
+                        editarCarga={(carga) => {
+                            setCargaSelecionada(carga);
+                            setAbrirFormulario(true);
+                        }}
+                    />
 
                 </Box>
 
             </Box>
 
+            <FormEditarCarga
+                abrir={abrirFormulario}
+                carga={cargaSelecionada}
+                fechar={() => {
+                    setAbrirFormulario(false);
+                    setCargaSelecionada(null);
+                }}
+                atualizar={carregarCargas}
+            />
+
         </Box>
+
     );
 }
 

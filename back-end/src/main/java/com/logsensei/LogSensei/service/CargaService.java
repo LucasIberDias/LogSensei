@@ -44,6 +44,12 @@ public class CargaService {
         this.controleCarregamentoRepository = controleCarregamentoRepository;
     }
 
+    // UC-GC02: Listar Cargas
+    public List<Carga> listarCargas() {
+        return cargaRepository.findAll();
+    }
+
+    // UC-GC03: Atualizar Carga
     public void atualizarCarga(AtualizarCargaRequestDTO request) {
 
         Carga carga = cargaRepository.findById(request.getIdCarga())
@@ -187,10 +193,5 @@ public class CargaService {
 
             controleCarregamentoRepository.save(controleCarregamento);
         }
-    }
-
-    // UC-GC02: Listar Cargas
-    public List<Carga> listarCargas() {
-        return cargaRepository.findAll();
     }
 }

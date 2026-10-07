@@ -19,18 +19,17 @@ public class CargaController {
         this.cargaService = cargaService;
     }
 
-    // Atualizar Carga
+    // UC-GC02: Listar Cargas
+    @GetMapping
+    public ResponseEntity<List<Carga>> listarCargas() {
+        return ResponseEntity.ok(cargaService.listarCargas());
+    }
+
+    // UC-GC03: Atualizar Carga
     @PatchMapping
     public ResponseEntity<Void> atualizarCarga(@RequestBody AtualizarCargaRequestDTO request) {
         cargaService.atualizarCarga(request);
 
         return ResponseEntity.noContent().build();
-    }
-
-    // UC-GC02: Listar Cargas
-    @GetMapping
-    public ResponseEntity<List<Carga>> listarCargas() {
-        return ResponseEntity.ok(
-                cargaService.listarCargas());
     }
 }

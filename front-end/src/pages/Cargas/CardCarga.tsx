@@ -20,9 +20,13 @@ import { temPermissao } from "../../services/permissionService";
 
 interface CardCargaProps {
     carga: Carga;
+    editarCarga: (carga: Carga) => void;
 }
 
-function CardCarga({ carga }: CardCargaProps) {
+function CardCarga({
+    carga,
+    editarCarga,
+}: CardCargaProps) {
 
     function obterStatus(status: string) {
 
@@ -62,15 +66,12 @@ function CardCarga({ carga }: CardCargaProps) {
                     borda: "grey.400",
                     fundo: "grey.100",
                 };
-
         }
-
     }
 
     const status = obterStatus(carga.status);
 
     return (
-
         <Card
             sx={{
                 border: "1px solid",
@@ -126,20 +127,21 @@ function CardCarga({ carga }: CardCargaProps) {
                     {(temPermissao("GERENTE LOGISTICA") ||
                         temPermissao("DESENVOLVEDOR")) && (
 
-                        <IconButton
-                            size="small"
-                            color="error"
-                            title="Cancelar carga"
-                        >
-                            <CloseIcon fontSize="small" />
-                        </IconButton>
+                            <IconButton
+                                size="small"
+                                color="error"
+                                title="Cancelar carga"
+                            >
+                                <CloseIcon fontSize="small" />
+                            </IconButton>
 
-                    )}
+                        )}
 
                     <IconButton
                         size="small"
                         color="warning"
                         title="Editar carga"
+                        onClick={() => editarCarga(carga)}
                     >
                         <EditIcon fontSize="small" />
                     </IconButton>
@@ -199,7 +201,6 @@ function CardCarga({ carga }: CardCargaProps) {
             </Box>
 
         </Card>
-
     );
 }
 
