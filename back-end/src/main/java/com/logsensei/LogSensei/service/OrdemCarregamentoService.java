@@ -24,8 +24,6 @@ public class OrdemCarregamentoService {
 
     private final ClienteRepository clienteRepository;
 
-    private final VeiculoRepository veiculoRepository;
-
     private final UsuarioRepository usuarioRepository;
 
     private final ProdutoRepository produtoRepository;
@@ -42,7 +40,6 @@ public class OrdemCarregamentoService {
 
         this.ordemCarregamentoRepository = ordemCarregamentoRepository;
         this.clienteRepository = clienteRepository;
-        this.veiculoRepository = veiculoRepository;
         this.usuarioRepository = usuarioRepository;
         this.produtoRepository = produtoRepository;
         this.cargaRepository = cargaRepository;

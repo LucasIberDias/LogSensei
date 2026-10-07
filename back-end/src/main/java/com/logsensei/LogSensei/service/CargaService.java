@@ -137,8 +137,7 @@ public class CargaService {
 
         for (Item item : ordem.getItem()) {
 
-            pesoTotal += item.getProduto().getPesoProduto()
-                    * item.getQuantidade();
+            pesoTotal += item.getProduto().getPesoProduto()* item.getQuantidade();
         }
 
         carga.setPesoTotal(pesoTotal);
