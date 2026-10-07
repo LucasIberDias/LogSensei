@@ -43,7 +43,7 @@ public class VeiculoService {
         return veiculoRepository.findAll();
     }
 
-    // Busca veiculo pelo codigo
+    // UC-GV03: Buscar Veículo por Placa
     public Veiculo buscarVeiculo(String placaVeiculo) {
         return veiculoRepository.findByPlacaVeiculo(placaVeiculo)
                 .orElseThrow(() -> new RuntimeException("Veiculo não cadastrado"));

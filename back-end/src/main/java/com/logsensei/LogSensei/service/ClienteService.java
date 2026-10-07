@@ -46,9 +46,9 @@ public class ClienteService {
         return clienteRepository.findAll();
     }
 
-    // Busca cliente pelo codigo
+    // UC-GC03: Buscar Cliente por Código
     public Cliente buscarCliente(Long codigoCliente) {
         return clienteRepository.findByCodigoCliente(codigoCliente)
-                .orElseThrow(() -> new RuntimeException("Cliente não possui cadastro"));
+            .orElseThrow(() -> new RuntimeException("Cliente não possui cadastro"));
     }
 }

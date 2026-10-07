@@ -19,3 +19,10 @@ export async function listarProdutos(): Promise<Produto[]> {
 
     return response.data;
 }
+
+// UC-GP03: Buscar Produto 
+export async function buscarProdutoPorCodigo(codigoProduto: number) {
+    const response = await api.get(`/produtos/codigo/${codigoProduto}`);
+
+    return response.data;
+}

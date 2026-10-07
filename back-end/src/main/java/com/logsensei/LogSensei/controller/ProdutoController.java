@@ -34,7 +34,7 @@ public class ProdutoController {
         return ResponseEntity.ok(produtoService.ListarProdutos());
     }
 
-    // Buscar produto pelo codigo
+    // UC-GP03: Buscar Produto por Código
     @GetMapping("/codigo/{codigoProduto}")
     public ResponseEntity<Produto> buscarPorCodigo(@PathVariable Long codigoProduto) {
 

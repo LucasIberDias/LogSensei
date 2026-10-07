@@ -35,7 +35,7 @@ public class ClienteController {
         return ResponseEntity.ok(clienteService.listarClientes());
     }
 
-    // Buscar cliente
+    // UC-GC03: Buscar Cliente por Código
     @GetMapping("/codigo/{codigoCliente}")
     public ResponseEntity<Cliente> buscarPorCodigo(@PathVariable Long codigoCliente) {
 

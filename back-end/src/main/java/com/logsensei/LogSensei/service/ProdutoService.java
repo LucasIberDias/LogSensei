@@ -44,7 +44,7 @@ public class ProdutoService {
         return produtoRepository.findAll();
     }
 
-    // Busca produto pelo codigo
+    // UC-GP03: Buscar Produto por Código
     public Produto buscarProduto(Long codigoProduto) {
         return produtoRepository.findByCodigoProduto(codigoProduto)
                 .orElseThrow(() -> new RuntimeException("Produto não possui cadastro"));

@@ -26,3 +26,9 @@ export async function listarVeiculos(): Promise<Veiculo[]> {
     return response.data;
 }
 
+// UC-GV03: Buscar Veículo por Placa
+export async function buscarVeiculoPorPlaca(placaVeiculo: string) {
+    const response = await api.get(`/veiculos/placa/${placaVeiculo}`);
+
+    return response.data;
+}

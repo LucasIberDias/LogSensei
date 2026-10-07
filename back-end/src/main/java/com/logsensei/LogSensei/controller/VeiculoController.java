@@ -34,7 +34,7 @@ public class VeiculoController {
         return ResponseEntity.ok(veiculoService.listarVeiculos());
     }
 
-    // Buscar veiculo
+    // UC-GV03: Buscar Veículo por Placa
     @GetMapping("/placa/{placaVeiculo}")
     public ResponseEntity<Veiculo> buscarPorCodigo(@PathVariable String placaVeiculo) {
 

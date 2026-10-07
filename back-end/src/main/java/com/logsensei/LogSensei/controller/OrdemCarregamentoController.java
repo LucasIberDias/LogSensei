@@ -16,7 +16,7 @@ public class OrdemCarregamentoController {
         this.ordemCarregamentoService = ordemCarregamentoService;
     }
 
-    // Criar ordem de carregamento
+    // UC-GC01: Cadastrar Ordem de Carregamento
     @PostMapping
     public ResponseEntity<Void> criarVeiculo(@RequestBody OrdemCarregamentoRequestDTO request) {
         ordemCarregamentoService.criarOrdemCarregamento(request);

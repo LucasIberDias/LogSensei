@@ -45,7 +45,7 @@ public class OrdemCarregamentoService {
         this.cargaRepository = cargaRepository;
     }
 
-    // Criar ordem de carregamento
+    // UC-GC01: Cadastrar Ordem de Carregamento
     public void criarOrdemCarregamento(OrdemCarregamentoRequestDTO request) {
         OrdemCarregamento ordemCarregamento = new OrdemCarregamento();
 
@@ -98,6 +98,7 @@ public class OrdemCarregamentoService {
         // Coloco os dados inicias da carga
         carga.setStatus("PENDENTE");
         carga.setPesoTotal(pesoTotal);
+        carga.setAproveitamento(0.0);
         carga.setOrdemCarregamento(ordemCarregamento);
 
         // Salvo a ordem de carregamento
