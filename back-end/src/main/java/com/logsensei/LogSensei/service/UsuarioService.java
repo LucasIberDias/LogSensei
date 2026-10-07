@@ -26,7 +26,7 @@ public class UsuarioService {
         Usuario usuarioAutenticado = usuarioRepository.findById(idUsuario).get();
 
         // Verifico se o usuario tem permissão para cadastrar Usuario
-        if (usuarioAutenticado.getCargo().equals("GERENTE LOGISTICA") && usuarioAutenticado.getCargo().equals("DESENVOLVEDOR")) {
+        if (usuarioAutenticado.getCargo().equals("GERENTE LOGISTICA") || usuarioAutenticado.getCargo().equals("DESENVOLVEDOR")) {
             throw new RuntimeException("Você não tem permissão para cadastrar um usuário");
         }
 

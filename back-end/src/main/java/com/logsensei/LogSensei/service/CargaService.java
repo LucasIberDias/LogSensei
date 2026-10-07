@@ -6,11 +6,14 @@ import org.springframework.stereotype.Service;
 
 import com.logsensei.LogSensei.dto.carga.AtualizarCargaRequestDTO;
 import com.logsensei.LogSensei.dto.item.ItemRequestDTO;
+
 import com.logsensei.LogSensei.model.Carga;
 import com.logsensei.LogSensei.model.ControleCarregamento;
 import com.logsensei.LogSensei.model.Item;
 import com.logsensei.LogSensei.model.OrdemCarregamento;
 import com.logsensei.LogSensei.model.Produto;
+import com.logsensei.LogSensei.model.Usuario;
+
 import com.logsensei.LogSensei.repository.CargaRepository;
 import com.logsensei.LogSensei.repository.ClienteRepository;
 import com.logsensei.LogSensei.repository.ControleCarregamentoRepository;
@@ -193,5 +196,25 @@ public class CargaService {
 
             controleCarregamentoRepository.save(controleCarregamento);
         }
+    }
+
+    // UC-GC04: Cancelar Carga
+    public void cancelarCarga(Long idUsuario, Long idCarga){
+        // Pego o usuario que pretende cancelar a carga
+        Usuario usuarioAutenticado = usuarioRepository.findById(idUsuario).get();
+
+        // Verifico se o usuario tem permissão para cancelar cargas
+        if (usuarioAutenticado.getCargo().equals("GERENTE LOGISTICA") || usuarioAutenticado.getCargo().equals("DESENVOLVEDOR")) {
+            throw new RuntimeException("Você não tem permissão para cancelar cargas");
+        }
+
+        // Pego a carga que será cancelada
+        Carga carga = cargaRepository.findById(idCarga).get();
+
+        // Cancelo a carga
+        carga.setStatus("CANCELADA");
+
+        // Salvo as mudanças
+        cargaRepository.save(carga);
     }
 }

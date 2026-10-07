@@ -32,4 +32,12 @@ public class CargaController {
 
         return ResponseEntity.noContent().build();
     }
+
+    // UC-GC04: Cancelar Carga
+    @PatchMapping("/{id}/cancelar")
+    public ResponseEntity<Void> cancelarCarga(@PathVariable Long id, @RequestParam Long idUsuario) {
+        cargaService.cancelarCarga(idUsuario, id);
+        
+        return ResponseEntity.noContent().build();
+    }
 }
