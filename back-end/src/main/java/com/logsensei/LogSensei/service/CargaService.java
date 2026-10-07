@@ -189,6 +189,7 @@ public class CargaService {
         }
     }
 
+    // UC-GC02: Listar Cargas
     public List<Carga> listarCargas() {
         return cargaRepository.findAll();
     }

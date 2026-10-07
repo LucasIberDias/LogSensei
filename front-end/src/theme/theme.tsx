@@ -26,14 +26,22 @@ export const theme = createTheme({
 
         success: {
             main: "#168F5A",
+            light: "#D9F5E4",
         },
 
         warning: {
             main: "#E7A51A",
+            light: "#FFF3D6",
         },
 
         error: {
             main: "#D64545",
+            light: "#FBE0E0",
+        },
+
+        info: {
+            main: "#3578C7",
+            light: "#E3EFFC",
         },
     },
 });

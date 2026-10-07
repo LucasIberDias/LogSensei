@@ -27,6 +27,7 @@ public class CargaController {
         return ResponseEntity.noContent().build();
     }
 
+    // UC-GC02: Listar Cargas
     @GetMapping
     public ResponseEntity<List<Carga>> listarCargas() {
         return ResponseEntity.ok(
