@@ -18,7 +18,5 @@ public class OrdemCarregamentoRequestDTO {
     private List<ItemRequestDTO> itens;
     private String observacao;
     private LocalDate dataEntrega;
-    private String motorista;
-    private String placaVeiculo;
     private Long idUsuario;
 }

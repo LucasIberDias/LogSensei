@@ -35,7 +35,6 @@ public class Carga {
     @NotNull
     private Double pesoTotal;
 
-    @NotNull
     private Double aproveitamento;
 
     @NotNull

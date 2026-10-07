@@ -7,7 +7,6 @@ import {
 import PersonIcon from "@mui/icons-material/Person";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 import Inventory2Icon from "@mui/icons-material/Inventory2";
-import LocalShippingIcon from "@mui/icons-material/LocalShipping";
 import SearchIcon from "@mui/icons-material/Search";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
@@ -136,11 +135,6 @@ function Ordem() {
                                 slotProps={dateLabelProps}
                             />
 
-                            <TextField
-                                label="Motorista"
-                                fullWidth
-                            />
-
                             <Box sx={{ display: { xs: "none", md: "block" } }} />
 
                             <TextField
@@ -156,39 +150,6 @@ function Ordem() {
                                     },
                                 }}
                             />
-                        </Box>
-                    </SectionBox>
-
-                    <SectionBox
-                        titulo="Veículo"
-                        descricao="Informe a placa do veículo que realizará o carregamento."
-                        icone={<LocalShippingIcon />}
-                    >
-                        <Box
-                            sx={{
-                                display: "flex",
-                                alignItems: "center",
-                                gap: 2,
-                            }}
-                        >
-                            <TextField
-                                label="Placa do veículo"
-                                placeholder="Ex: ABC1D23"
-                                sx={{
-                                    width: {
-                                        xs: "100%",
-                                        md: 250,
-                                    },
-                                }}
-                            />
-
-                            <Button
-                                variant="outlined"
-                                startIcon={<SearchIcon />}
-                                sx={buttonSx}
-                            >
-                                CONSULTAR
-                            </Button>
                         </Box>
                     </SectionBox>
 

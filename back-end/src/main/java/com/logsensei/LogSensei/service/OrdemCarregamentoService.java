@@ -59,8 +59,6 @@ public class OrdemCarregamentoService {
         ordemCarregamento.setVencimento(request.getVencimento());
         ordemCarregamento.setObservacao(request.getObservacao());
         ordemCarregamento.setDataEntrega(request.getDataEntrega());
-        ordemCarregamento.setMotorista(request.getMotorista());
-        ordemCarregamento.setVeiculo(veiculoRepository.findByPlacaVeiculo(request.getPlacaVeiculo()).get());
         ordemCarregamento.setDataCriacao(LocalDateTime.now());
         ordemCarregamento.setUsuario(usuarioRepository.findById(request.getIdUsuario()).get());
 
@@ -100,13 +98,9 @@ public class OrdemCarregamentoService {
         // Criação da carga
         Carga carga = new Carga();
 
-        // Calculo o aproveitamento do veiculo
-        Double aproveitamento = (pesoTotal / ordemCarregamento.getVeiculo().getCapacidadeVeiculo()) * 100;
-
         // Coloco os dados inicias da carga
         carga.setStatus("PENDENTE");
         carga.setPesoTotal(pesoTotal);
-        carga.setAproveitamento(aproveitamento);
         carga.setOrdemCarregamento(ordemCarregamento);
 
         // Salvo a ordem de carregamento
