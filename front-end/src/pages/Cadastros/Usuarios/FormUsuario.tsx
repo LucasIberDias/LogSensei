@@ -59,7 +59,7 @@ function FormUsuario({ abrir, fechar }: FormUsuarioProps) {
         try {
 
             await cadastrarUsuario(
-                nomeUsuario.toLowerCase(),
+                nomeUsuario.toUpperCase(),
                 senhaUsuario,
                 cargo.toUpperCase(),
                 idUsuario

@@ -29,10 +29,7 @@ function FormCliente({ abrir, fechar }: FormClienteProps) {
 
         try {
 
-            await cadastrarCliente(
-                Number(codigoCliente),
-                nomeCliente
-            );
+            await cadastrarCliente(Number(codigoCliente), nomeCliente.toLowerCase());
 
             fechar();
 

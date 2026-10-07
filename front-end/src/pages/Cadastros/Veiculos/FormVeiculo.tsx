@@ -31,11 +31,7 @@ function FormVeiculo({ abrir, fechar }: FormVeiculoProps) {
 
         try {
 
-            await cadastrarVeiculo(
-                placaVeiculo,
-                tipoVeiculo,
-                Number(capacidadeVeiculo)
-            );
+            await cadastrarVeiculo(placaVeiculo.toUpperCase(), tipoVeiculo.toUpperCase(), Number(capacidadeVeiculo));
 
             fechar();
 

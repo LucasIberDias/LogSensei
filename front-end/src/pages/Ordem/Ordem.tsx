@@ -200,11 +200,11 @@ function Ordem() {
         try {
             const dados = {
                 codigoCliente: Number(codigoCliente),
-                endereco,
-                numeroPedido,
-                vencimento,
-                observacao,
-                dataEntrega,
+                endereco: endereco.toUpperCase(),
+                numeroPedido: numeroPedido.toUpperCase(),
+                vencimento: vencimento.toUpperCase(),
+                observacao: observacao.toUpperCase(),
+                dataEntrega: dataEntrega.toUpperCase(),
                 idUsuario: Number(idUsuario),
                 itens: itens.map((item) => ({
                     codigoProduto: Number(item.codigoProduto),

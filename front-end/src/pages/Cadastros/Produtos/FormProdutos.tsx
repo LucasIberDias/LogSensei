@@ -31,7 +31,7 @@ function FormProduto({ abrir, fechar }: FormProdutoProps) {
 
         try {
 
-            await cadastrarProduto(Number(codigoProduto), nomeProduto, medidaProduto, Number(pesoProduto));
+            await cadastrarProduto(Number(codigoProduto), nomeProduto.toUpperCase(), medidaProduto.toUpperCase(), Number(pesoProduto));
 
             fechar();
 
