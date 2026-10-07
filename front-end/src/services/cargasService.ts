@@ -13,3 +13,12 @@ export async function listarCargas(): Promise<Carga[]> {
 export async function atualizarCarga(dados: AtualizarCargaRequest): Promise<void> {
     await api.patch("/cargas", dados);
 }
+
+// UC_GC04: Cancelar Carga
+export async function cancelarCarga(idCarga: number, idUsuario: number): Promise<void> {
+    await api.patch(`/cargas/${idCarga}/cancelar`, null, {
+        params: {
+            idUsuario,
+        },
+    });
+}

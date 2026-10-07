@@ -7,11 +7,13 @@ import CardCarga from "./CardCarga";
 type ListaCargasProps = {
     cargas: Carga[];
     editarCarga: (carga: Carga) => void;
+    cancelarCarga: (carga: Carga) => void;
 };
 
 function ListaCargas({
     cargas,
     editarCarga,
+    cancelarCarga,
 }: ListaCargasProps) {
 
     if (cargas.length === 0) {
@@ -39,6 +41,7 @@ function ListaCargas({
                     key={carga.idCarga}
                     carga={carga}
                     editarCarga={editarCarga}
+                    cancelarCarga={cancelarCarga}
                 />
             ))}
         </Box>

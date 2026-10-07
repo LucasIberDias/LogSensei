@@ -15,23 +15,22 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
 
 import type { Carga } from "../../types/carga";
-
 import { temPermissao } from "../../services/permissionService";
 
 interface CardCargaProps {
     carga: Carga;
     editarCarga: (carga: Carga) => void;
+    cancelarCarga: (carga: Carga) => void;
 }
 
 function CardCarga({
     carga,
     editarCarga,
+    cancelarCarga,
 }: CardCargaProps) {
 
     function obterStatus(status: string) {
-
         switch (status) {
-
             case "PRÓXIMO":
                 return {
                     icone: <ScheduleIcon />,
@@ -81,7 +80,6 @@ function CardCarga({
                 boxShadow: 1,
             }}
         >
-
             <Box
                 sx={{
                     display: "flex",
@@ -93,7 +91,6 @@ function CardCarga({
                     borderColor: status.borda,
                 }}
             >
-
                 <Box
                     sx={{
                         display: "flex",
@@ -101,7 +98,6 @@ function CardCarga({
                         gap: 1,
                     }}
                 >
-
                     <Box
                         sx={{
                             display: "flex",
@@ -119,22 +115,19 @@ function CardCarga({
                     >
                         Carga #{carga.idCarga}
                     </Typography>
-
                 </Box>
 
                 <Box>
-
                     {(temPermissao("GERENTE LOGISTICA") ||
                         temPermissao("DESENVOLVEDOR")) && (
-
                             <IconButton
                                 size="small"
                                 color="error"
                                 title="Cancelar carga"
+                                onClick={() => cancelarCarga(carga)}
                             >
                                 <CloseIcon fontSize="small" />
                             </IconButton>
-
                         )}
 
                     <IconButton
@@ -153,9 +146,7 @@ function CardCarga({
                     >
                         <VisibilityIcon fontSize="small" />
                     </IconButton>
-
                 </Box>
-
             </Box>
 
             <Box
@@ -163,7 +154,6 @@ function CardCarga({
                     padding: 2,
                 }}
             >
-
                 <Typography
                     sx={{
                         fontWeight: 600,
@@ -197,9 +187,7 @@ function CardCarga({
                     Local de carga:{" "}
                     {carga.localSaida || "Não informado"}
                 </Typography>
-
             </Box>
-
         </Card>
     );
 }

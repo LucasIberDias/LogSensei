@@ -4,10 +4,14 @@ import { Box } from "@mui/material";
 
 import type { Carga } from "../../types/carga";
 
-import { listarCargas } from "../../services/cargasService";
+import {
+    listarCargas,
+    cancelarCarga,
+} from "../../services/cargasService";
 
 import ListaCargas from "./ListaCargas";
 import FormEditarCarga from "./FormEditarCarga";
+import FormCancelarCarga from "./FormCancelarCarga";
 
 import Header from "../../components/Header/Header";
 import Sidebar from "../../components/Sidebar/Sidebar";
@@ -16,36 +20,64 @@ import PageHeader from "../../components/PageHeader/PageHeader";
 function Cargas() {
 
     const [cargas, setCargas] = useState<Carga[]>([]);
-    const [cargaSelecionada, setCargaSelecionada] =
-        useState<Carga | null>(null);
 
+    const [cargaSelecionada, setCargaSelecionada] = useState<Carga | null>(null);
     const [abrirFormulario, setAbrirFormulario] = useState(false);
+    const [abrirCancelamento, setAbrirCancelamento] = useState(false);
+    const [cargaParaCancelar, setCargaParaCancelar] = useState<Carga | null>(null);
 
     useEffect(() => {
         carregarCargas();
     }, []);
 
     async function carregarCargas() {
-
         try {
-
             const dados = await listarCargas();
-
             setCargas(dados);
-
         } catch (erro) {
-
             console.error("Erro ao carregar cargas:", erro);
+        }
+    }
 
+    function selecionarCargaParaCancelar(carga: Carga) {
+        setCargaParaCancelar(carga);
+        setAbrirCancelamento(true);
+    }
+
+    async function confirmarCancelamento() {
+
+        if (!cargaParaCancelar) {
+            return;
         }
 
+        const idUsuario = Number(localStorage.getItem("idUsuario"));
+
+        if (!idUsuario) {
+            console.error("Usuário não encontrado.");
+            return;
+        }
+
+        try {
+            await cancelarCarga(
+                cargaParaCancelar.idCarga,
+                idUsuario
+            );
+
+            await carregarCargas();
+
+            setAbrirCancelamento(false);
+            setCargaParaCancelar(null);
+
+        } catch (erro) {
+            console.error("Erro ao cancelar carga:", erro);
+        }
     }
 
     return (
-
         <Box>
 
             <Header />
+
             <Sidebar />
 
             <Box
@@ -77,10 +109,13 @@ function Cargas() {
 
                     <ListaCargas
                         cargas={cargas}
+
                         editarCarga={(carga) => {
                             setCargaSelecionada(carga);
                             setAbrirFormulario(true);
                         }}
+
+                        cancelarCarga={selecionarCargaParaCancelar}
                     />
 
                 </Box>
@@ -90,15 +125,27 @@ function Cargas() {
             <FormEditarCarga
                 abrir={abrirFormulario}
                 carga={cargaSelecionada}
+
                 fechar={() => {
                     setAbrirFormulario(false);
                     setCargaSelecionada(null);
                 }}
+
                 atualizar={carregarCargas}
             />
 
-        </Box>
+            <FormCancelarCarga
+                abrir={abrirCancelamento}
 
+                fechar={() => {
+                    setAbrirCancelamento(false);
+                    setCargaParaCancelar(null);
+                }}
+
+                cancelar={confirmarCancelamento}
+            />
+
+        </Box>
     );
 }
 

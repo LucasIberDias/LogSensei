@@ -204,7 +204,7 @@ public class CargaService {
         Usuario usuarioAutenticado = usuarioRepository.findById(idUsuario).get();
 
         // Verifico se o usuario tem permissão para cancelar cargas
-        if (usuarioAutenticado.getCargo().equals("GERENTE LOGISTICA") || usuarioAutenticado.getCargo().equals("DESENVOLVEDOR")) {
+        if (usuarioAutenticado.getCargo().equals("GERENTE LOGISTICA") && usuarioAutenticado.getCargo().equals("DESENVOLVEDOR")) {
             throw new RuntimeException("Você não tem permissão para cancelar cargas");
         }
 
