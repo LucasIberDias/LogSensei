@@ -6,6 +6,7 @@ import {
     CardContent,
     Grid,
     CircularProgress,
+    LinearProgress,
     Alert,
     Table,
     TableBody,
@@ -26,6 +27,7 @@ import EventAvailableRoundedIcon from "@mui/icons-material/EventAvailableRounded
 import InboxRoundedIcon from "@mui/icons-material/InboxRounded";
 import SpeedRoundedIcon from "@mui/icons-material/SpeedRounded";
 import CancelRoundedIcon from "@mui/icons-material/CancelRounded";
+import ScaleRoundedIcon from "@mui/icons-material/ScaleRounded";
 
 import Header from "../../components/Header/Header";
 import Sidebar from "../../components/Sidebar/Sidebar";
@@ -63,6 +65,9 @@ const palette = {
     cancelada: { main: "#dc2626", bg: "#fdecec" }, // vermelho
 };
 
+// O backend envia o peso em kg. Se já vier em toneladas, troque para 1.
+const KG_POR_TONELADA = 1000;
+
 function statusColor(status: string) {
     const s = status?.toUpperCase();
     if (s === "ENTREGUE") return { color: "success" as const };
@@ -70,6 +75,13 @@ function statusColor(status: string) {
     if (s === "PRÓXIMO") return { color: "secondary" as const };
     if (s === "CANCELADA") return { color: "error" as const };
     return { color: "default" as const };
+}
+
+function formatarToneladas(valor: number) {
+    return valor.toLocaleString("pt-BR", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+    });
 }
 
 interface StatCardProps {
@@ -173,7 +185,7 @@ function Dashboard() {
         (carga) => carga.status?.toUpperCase() === "CANCELADA"
     ).length;
 
-    // Cargas "válidas" para fins estatísticos (aproveitamento e percentual entregue)
+    // Cargas "válidas" para fins estatísticos (aproveitamento, percentual entregue e peso)
     // -> ignora tudo que foi cancelada
     const cargasNaoCanceladas = cargas.filter(
         (carga) => carga.status?.toUpperCase() !== "CANCELADA"
@@ -221,6 +233,29 @@ function Dashboard() {
     const percentualEntregue =
         cargasNaoCanceladas.length > 0
             ? (cargasEntregues / cargasNaoCanceladas.length) * 100
+            : 0;
+
+    // ----- PESO (em toneladas) -----
+    const pesoDaCarga = (carga: Carga) => Number(carga.pesoTotal) || 0;
+
+    // Total considera apenas cargas não canceladas
+    const pesoTotalToneladas =
+        cargasNaoCanceladas.reduce(
+            (total, carga) => total + pesoDaCarga(carga),
+            0
+        ) / KG_POR_TONELADA;
+
+    const pesoEntregueToneladas =
+        cargasNaoCanceladas
+            .filter((carga) => carga.status?.toUpperCase() === "ENTREGUE")
+            .reduce((total, carga) => total + pesoDaCarga(carga), 0) /
+        KG_POR_TONELADA;
+
+    const pesoRestanteToneladas = pesoTotalToneladas - pesoEntregueToneladas;
+
+    const percentualPesoEntregue =
+        pesoTotalToneladas > 0
+            ? (pesoEntregueToneladas / pesoTotalToneladas) * 100
             : 0;
 
     return (
@@ -308,7 +343,6 @@ function Dashboard() {
                                 />
                             </Grid>
 
-                            {/* Novo card: cargas canceladas */}
                             <Grid size={{ xs: 12, sm: 6, md: 3 }}>
                                 <StatCard
                                     label="Cargas canceladas"
@@ -477,6 +511,147 @@ function Dashboard() {
                                 </Card>
                             </Grid>
                         </Grid>
+
+                        {/* PESO TOTAL */}
+                        <Card
+                            elevation={0}
+                            sx={{
+                                marginTop: 3,
+                                borderRadius: 3,
+                                border: "1px solid #eef0f3",
+                                boxShadow: "0 2px 10px rgba(20, 20, 43, 0.04)",
+                            }}
+                        >
+                            <CardContent>
+                                <Stack
+                                    direction="row"
+                                    spacing={1}
+                                    sx={{
+                                        alignItems: "center",
+                                        marginBottom: 2,
+                                    }}
+                                >
+                                    <ScaleRoundedIcon
+                                        fontSize="small"
+                                        sx={{ color: palette.total.main }}
+                                    />
+                                    <Typography
+                                        variant="body2"
+                                        color="text.secondary"
+                                    >
+                                        Peso total das cargas
+                                    </Typography>
+                                </Stack>
+
+                                <Grid
+                                    container
+                                    spacing={3}
+                                    sx={{ alignItems: "center" }}
+                                >
+                                    <Grid size={{ xs: 12, md: 4 }}>
+                                        <Typography
+                                            variant="body2"
+                                            color="text.secondary"
+                                        >
+                                            Total
+                                        </Typography>
+                                        <Typography
+                                            variant="h4"
+                                            sx={{ fontWeight: 700 }}
+                                        >
+                                            {formatarToneladas(
+                                                pesoTotalToneladas
+                                            )}{" "}
+                                            t
+                                        </Typography>
+                                    </Grid>
+
+                                    <Grid size={{ xs: 12, md: 4 }}>
+                                        <Typography
+                                            variant="body2"
+                                            color="text.secondary"
+                                        >
+                                            Já entregue
+                                        </Typography>
+                                        <Typography
+                                            variant="h4"
+                                            sx={{
+                                                fontWeight: 700,
+                                                color: palette.entregue.main,
+                                            }}
+                                        >
+                                            {formatarToneladas(
+                                                pesoEntregueToneladas
+                                            )}{" "}
+                                            t
+                                        </Typography>
+                                    </Grid>
+
+                                    <Grid size={{ xs: 12, md: 4 }}>
+                                        <Typography
+                                            variant="body2"
+                                            color="text.secondary"
+                                        >
+                                            Falta entregar
+                                        </Typography>
+                                        <Typography
+                                            variant="h4"
+                                            sx={{
+                                                fontWeight: 700,
+                                                color: palette.pendente.main,
+                                            }}
+                                        >
+                                            {formatarToneladas(
+                                                pesoRestanteToneladas
+                                            )}{" "}
+                                            t
+                                        </Typography>
+                                    </Grid>
+                                </Grid>
+
+                                <Box sx={{ marginTop: 3 }}>
+                                    <Stack
+                                        direction="row"
+                                        sx={{
+                                            justifyContent: "space-between",
+                                            marginBottom: 0.5,
+                                        }}
+                                    >
+                                        <Typography
+                                            variant="body2"
+                                            color="text.secondary"
+                                        >
+                                            Progresso de entrega por peso
+                                        </Typography>
+                                        <Typography
+                                            variant="body2"
+                                            sx={{ fontWeight: 600 }}
+                                        >
+                                            {percentualPesoEntregue.toFixed(1)}
+                                            %
+                                        </Typography>
+                                    </Stack>
+
+                                    <LinearProgress
+                                        variant="determinate"
+                                        value={Math.min(
+                                            percentualPesoEntregue,
+                                            100
+                                        )}
+                                        sx={{
+                                            height: 10,
+                                            borderRadius: 5,
+                                            backgroundColor: "#eef0f3",
+                                            "& .MuiLinearProgress-bar": {
+                                                backgroundColor:
+                                                    palette.entregue.main,
+                                                borderRadius: 5,
+                                            },
+                                        }}
+                                    />
+                                </Box>
+                            </CardContent>
+                        </Card>
 
                         {/* ENTREGAS DE HOJE */}
                         <Card
