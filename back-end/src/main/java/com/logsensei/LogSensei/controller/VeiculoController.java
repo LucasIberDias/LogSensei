@@ -36,8 +36,12 @@ public class VeiculoController {
 
     // UC-GV03: Buscar Veículo por Placa
     @GetMapping("/placa/{placaVeiculo}")
-    public ResponseEntity<Veiculo> buscarPorCodigo(@PathVariable String placaVeiculo) {
+    public ResponseEntity<Veiculo> buscarPorCodigo(
+            @PathVariable String placaVeiculo) {
 
-        return ResponseEntity.ok(veiculoService.buscarVeiculo(placaVeiculo));
+        System.out.println("CONTROLLER - placa recebida: " + placaVeiculo);
+
+        return ResponseEntity.ok(
+                veiculoService.buscarVeiculo(placaVeiculo));
     }
 }

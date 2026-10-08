@@ -23,11 +23,13 @@ import ErroBox from "../../components/ErroBox/ErroBox";
 
 import { buscarClientePorCodigo } from "../../services/clientesService";
 import { buscarProdutoPorCodigo } from "../../services/produtosService";
+import { buscarVeiculoPorPlaca } from "../../services/veiculosService";
 import { atualizarCarga } from "../../services/cargasService";
 
 import type { Carga } from "../../types/carga";
 import type { Cliente } from "../../types/cliente";
 import type { Produto } from "../../types/produto";
+import type { Veiculo } from "../../types/veiculo";
 
 interface ItemOrdem {
     codigoProduto: string;
@@ -101,7 +103,10 @@ function FormEditarCarga({
     const [transportadora, setTransportadora] = useState("");
     const [notaFiscal, setNotaFiscal] = useState("");
     const [motorista, setMotorista] = useState("");
+
     const [placaVeiculo, setPlacaVeiculo] = useState("");
+    const [veiculo, setVeiculo] = useState<Veiculo | null>(null);
+    const [erroVeiculo, setErroVeiculo] = useState("");
 
     const [itens, setItens] = useState<ItemOrdem[]>([itemVazio()]);
 
@@ -115,6 +120,7 @@ function FormEditarCarga({
         }
 
         let cancelado = false;
+
         const ordem = carga.ordemCarregamento;
 
         setNumeroPedido(ordem.numeroPedido || "");
@@ -126,11 +132,19 @@ function FormEditarCarga({
         setLocalSaida(carga.localSaida || "");
         setTransportadora(carga.transportadora || "");
         setNotaFiscal(carga.notaFiscal || "");
-        setMotorista(ordem.motorista || "");
-        setPlacaVeiculo(ordem.veiculo?.placaVeiculo || "");
 
-        setCodigoCliente(ordem.cliente?.codigoCliente?.toString() || "");
+        setMotorista(ordem.motorista || "");
+
+        setPlacaVeiculo(ordem.veiculo?.placaVeiculo || "");
+        setVeiculo((ordem.veiculo as Veiculo) || null);
+        setErroVeiculo("");
+
+        setCodigoCliente(
+            ordem.cliente?.codigoCliente?.toString() || ""
+        );
+
         setCliente((ordem.cliente as Cliente) || null);
+
         setItens([itemVazio()]);
 
         setErro("");
@@ -141,9 +155,10 @@ function FormEditarCarga({
 
             if (ordem.cliente?.codigoCliente) {
                 try {
-                    const clienteEncontrado = await buscarClientePorCodigo(
-                        Number(ordem.cliente.codigoCliente)
-                    );
+                    const clienteEncontrado =
+                        await buscarClientePorCodigo(
+                            Number(ordem.cliente.codigoCliente)
+                        );
 
                     if (!cancelado && clienteEncontrado) {
                         setCliente(clienteEncontrado);
@@ -153,35 +168,54 @@ function FormEditarCarga({
                 }
             }
 
-            const itensCarregados = await Promise.all(
-                (ordem.item ?? []).map(async (item): Promise<ItemOrdem> => {
-                    const codigo =
-                        item.produto?.codigoProduto ?? item.codigoProduto;
-
-                    try {
-                        const produto = await buscarProdutoPorCodigo(
-                            Number(codigo)
+            if (ordem.veiculo?.placaVeiculo) {
+                try {
+                    const veiculoEncontrado =
+                        await buscarVeiculoPorPlaca(
+                            ordem.veiculo.placaVeiculo
                         );
 
-                        return {
-                            codigoProduto: String(codigo),
-                            quantidade: item.quantidade,
-                            valorUnitario: item.valorUnitario,
-                            produto,
-                            erro: "",
-                        };
-                    } catch (error) {
-                        console.error(error);
-
-                        return {
-                            codigoProduto: String(codigo),
-                            quantidade: item.quantidade,
-                            valorUnitario: item.valorUnitario,
-                            produto: null,
-                            erro: "Produto não possui cadastro.",
-                        };
+                    if (!cancelado && veiculoEncontrado) {
+                        setVeiculo(veiculoEncontrado);
                     }
-                })
+                } catch (error) {
+                    console.error(error);
+                }
+            }
+
+            const itensCarregados = await Promise.all(
+                (ordem.item ?? []).map(
+                    async (item): Promise<ItemOrdem> => {
+                        const codigo =
+                            item.produto?.codigoProduto ??
+                            item.codigoProduto;
+
+                        try {
+                            const produto =
+                                await buscarProdutoPorCodigo(
+                                    Number(codigo)
+                                );
+
+                            return {
+                                codigoProduto: String(codigo),
+                                quantidade: item.quantidade,
+                                valorUnitario: item.valorUnitario,
+                                produto,
+                                erro: "",
+                            };
+                        } catch (error) {
+                            console.error(error);
+
+                            return {
+                                codigoProduto: String(codigo),
+                                quantidade: item.quantidade,
+                                valorUnitario: item.valorUnitario,
+                                produto: null,
+                                erro: "Produto não possui cadastro.",
+                            };
+                        }
+                    }
+                )
             );
 
             if (!cancelado) {
@@ -190,6 +224,7 @@ function FormEditarCarga({
                         ? itensCarregados
                         : [itemVazio()]
                 );
+
                 setCarregando(false);
             }
         }
@@ -209,22 +244,56 @@ function FormEditarCarga({
         }
 
         try {
-            const clienteEncontrado = await buscarClientePorCodigo(
-                Number(codigoCliente)
-            );
+            const clienteEncontrado =
+                await buscarClientePorCodigo(
+                    Number(codigoCliente)
+                );
 
             setCliente(clienteEncontrado);
+
             setErroCliente(
-                clienteEncontrado ? "" : "Cliente não possui cadastro."
+                clienteEncontrado
+                    ? ""
+                    : "Cliente não possui cadastro."
             );
         } catch (error) {
             console.error(error);
+
             setCliente(null);
             setErroCliente("Cliente não possui cadastro.");
         }
     }
 
-    function atualizarItem(index: number, dados: Partial<ItemOrdem>) {
+    async function buscarVeiculo() {
+        const placa = placaVeiculo.trim().toUpperCase();
+
+        if (!placa) {
+            setVeiculo(null);
+            setErroVeiculo("Informe a placa do veículo.");
+            return;
+        }
+
+        try {
+            const veiculoEncontrado =
+                await buscarVeiculoPorPlaca(placa);
+
+            setVeiculo(veiculoEncontrado);
+            setErroVeiculo(
+                veiculoEncontrado
+                    ? ""
+                    : "Veículo não possui cadastro."
+            );
+        } catch (error) {
+            console.error("Erro ao buscar veículo:", error);
+            setVeiculo(null);
+            setErroVeiculo("Veículo não possui cadastro.");
+        }
+    }
+
+    function atualizarItem(
+        index: number,
+        dados: Partial<ItemOrdem>
+    ) {
         setItens((itensAtuais) => {
             const novosItens = [...itensAtuais];
 
@@ -245,13 +314,15 @@ function FormEditarCarga({
                 produto: null,
                 erro: "Informe o código do produto.",
             });
+
             return;
         }
 
         try {
-            const produtoEncontrado = await buscarProdutoPorCodigo(
-                Number(item.codigoProduto)
-            );
+            const produtoEncontrado =
+                await buscarProdutoPorCodigo(
+                    Number(item.codigoProduto)
+                );
 
             atualizarItem(index, {
                 produto: produtoEncontrado,
@@ -268,7 +339,10 @@ function FormEditarCarga({
     }
 
     function adicionarItem() {
-        setItens((itensAtuais) => [...itensAtuais, itemVazio()]);
+        setItens((itensAtuais) => [
+            ...itensAtuais,
+            itemVazio(),
+        ]);
     }
 
     function removerItem(index: number) {
@@ -278,7 +352,9 @@ function FormEditarCarga({
         }
 
         setItens((itensAtuais) =>
-            itensAtuais.filter((_, itemIndex) => itemIndex !== index)
+            itensAtuais.filter(
+                (_, itemIndex) => itemIndex !== index
+            )
         );
     }
 
@@ -290,21 +366,39 @@ function FormEditarCarga({
         setErro("");
 
         if (!cliente) {
-            setErro("Consulte um cliente válido antes de salvar.");
+            setErro(
+                "Consulte um cliente válido antes de salvar."
+            );
+
+            return;
+        }
+
+        if (!veiculo) {
+            setErro(
+                "Consulte um veículo válido antes de salvar."
+            );
+
             return;
         }
 
         if (itens.some((item) => !item.produto)) {
-            setErro("Todos os produtos precisam estar cadastrados.");
+            setErro(
+                "Todos os produtos precisam estar cadastrados."
+            );
+
             return;
         }
 
         if (itens.some((item) => item.quantidade <= 0)) {
-            setErro("Informe a quantidade de todos os produtos.");
+            setErro(
+                "Informe a quantidade de todos os produtos."
+            );
+
             return;
         }
 
-        const idUsuario = localStorage.getItem("idUsuario");
+        const idUsuario =
+            localStorage.getItem("idUsuario");
 
         if (!idUsuario) {
             setErro("Usuário não encontrado.");
@@ -321,32 +415,47 @@ function FormEditarCarga({
                 transportadora: transportadora.trim(),
                 notaFiscal: notaFiscal.trim(),
 
-                codigoCliente: Number(cliente.codigoCliente),
+                codigoCliente:
+                    Number(cliente.codigoCliente),
+
                 endereco: endereco.trim(),
                 numeroPedido: numeroPedido.trim(),
+
                 vencimento: vencimento || null,
+
                 observacao: observacao.trim(),
+
                 dataEntrega: dataEntrega || null,
 
                 motorista: motorista.trim(),
-                placaVeiculo: placaVeiculo.trim().toUpperCase(),
+
+                placaVeiculo:
+                    veiculo.placaVeiculo,
 
                 idUsuario: Number(idUsuario),
 
                 itens: itens.map((item) => ({
-                    codigoProduto: Number(item.codigoProduto),
+                    codigoProduto:
+                        Number(item.codigoProduto),
+
                     quantidade: item.quantidade,
-                    valorUnitario: item.valorUnitario,
+
+                    valorUnitario:
+                        item.valorUnitario,
                 })),
             };
 
             await atualizarCarga(dados);
+
             await atualizar();
 
             fechar();
         } catch (error) {
             console.error(error);
-            setErro("Não foi possível atualizar a carga.");
+
+            setErro(
+                "Não foi possível atualizar a carga."
+            );
         } finally {
             setSalvando(false);
         }
@@ -362,7 +471,12 @@ function FormEditarCarga({
     }
 
     return (
-        <Dialog open={abrir} onClose={cancelar} fullWidth maxWidth="xl">
+        <Dialog
+            open={abrir}
+            onClose={cancelar}
+            fullWidth
+            maxWidth="xl"
+        >
             <DialogTitle sx={{ fontWeight: 600 }}>
                 Editar Carga #{carga.idCarga}
             </DialogTitle>
@@ -397,7 +511,10 @@ function FormEditarCarga({
                                 placeholder="Ex: 12345"
                                 value={codigoCliente}
                                 onChange={(e) => {
-                                    setCodigoCliente(e.target.value);
+                                    setCodigoCliente(
+                                        e.target.value
+                                    );
+
                                     setCliente(null);
                                     setErroCliente("");
                                 }}
@@ -406,7 +523,9 @@ function FormEditarCarga({
 
                             <Button
                                 variant="outlined"
-                                startIcon={<SearchIcon />}
+                                startIcon={
+                                    <SearchIcon />
+                                }
                                 sx={buttonSx}
                                 onClick={buscarCliente}
                             >
@@ -417,16 +536,26 @@ function FormEditarCarga({
                         {cliente && (
                             <Box sx={resultadoSx}>
                                 <Typography variant="body2">
-                                    Código: {cliente.codigoCliente}
+                                    Código:{" "}
+                                    {
+                                        cliente.codigoCliente
+                                    }
                                 </Typography>
 
                                 <Typography variant="body2">
-                                    Nome: {cliente.nomeCliente}
+                                    Nome:{" "}
+                                    {
+                                        cliente.nomeCliente
+                                    }
                                 </Typography>
                             </Box>
                         )}
 
-                        {erroCliente && <ErroBox mensagem={erroCliente} />}
+                        {erroCliente && (
+                            <ErroBox
+                                mensagem={erroCliente}
+                            />
+                        )}
                     </SectionBox>
 
                     <SectionBox
@@ -449,7 +578,9 @@ function FormEditarCarga({
                                 placeholder="Ex: 101010"
                                 value={numeroPedido}
                                 onChange={(e) =>
-                                    setNumeroPedido(e.target.value)
+                                    setNumeroPedido(
+                                        e.target.value
+                                    )
                                 }
                                 fullWidth
                             />
@@ -458,7 +589,11 @@ function FormEditarCarga({
                                 label="Endereço"
                                 placeholder="Ex: Fazenda - Cidade"
                                 value={endereco}
-                                onChange={(e) => setEndereco(e.target.value)}
+                                onChange={(e) =>
+                                    setEndereco(
+                                        e.target.value
+                                    )
+                                }
                                 fullWidth
                             />
 
@@ -467,10 +602,14 @@ function FormEditarCarga({
                                 type="date"
                                 value={vencimento}
                                 onChange={(e) =>
-                                    setVencimento(e.target.value)
+                                    setVencimento(
+                                        e.target.value
+                                    )
                                 }
                                 fullWidth
-                                slotProps={dateLabelProps}
+                                slotProps={
+                                    dateLabelProps
+                                }
                             />
 
                             <TextField
@@ -478,11 +617,16 @@ function FormEditarCarga({
                                 type="date"
                                 value={dataEntrega}
                                 onChange={(e) =>
-                                    setDataEntrega(e.target.value)
+                                    setDataEntrega(
+                                        e.target.value
+                                    )
                                 }
                                 fullWidth
-                                slotProps={dateLabelProps}
+                                slotProps={
+                                    dateLabelProps
+                                }
                             />
+
                             <Box />
 
                             <TextField
@@ -490,7 +634,9 @@ function FormEditarCarga({
                                 placeholder="Ex: Sementes em Bag"
                                 value={observacao}
                                 onChange={(e) =>
-                                    setObservacao(e.target.value)
+                                    setObservacao(
+                                        e.target.value
+                                    )
                                 }
                                 fullWidth
                                 multiline
@@ -515,7 +661,10 @@ function FormEditarCarga({
                                 key={index}
                                 sx={{
                                     marginBottom:
-                                        index === itens.length - 1 ? 0 : 3,
+                                        index ===
+                                            itens.length - 1
+                                            ? 0
+                                            : 3,
                                 }}
                             >
                                 <Box
@@ -532,13 +681,20 @@ function FormEditarCarga({
                                     <TextField
                                         label="Código do produto"
                                         placeholder="Ex: 6252"
-                                        value={item.codigoProduto}
+                                        value={
+                                            item.codigoProduto
+                                        }
                                         onChange={(e) =>
-                                            atualizarItem(index, {
-                                                codigoProduto: e.target.value,
-                                                produto: null,
-                                                erro: "",
-                                            })
+                                            atualizarItem(
+                                                index,
+                                                {
+                                                    codigoProduto:
+                                                        e.target
+                                                            .value,
+                                                    produto: null,
+                                                    erro: "",
+                                                }
+                                            )
                                         }
                                         fullWidth
                                     />
@@ -546,13 +702,21 @@ function FormEditarCarga({
                                     <TextField
                                         label="Quantidade"
                                         type="number"
-                                        value={item.quantidade}
+                                        value={
+                                            item.quantidade
+                                        }
                                         onChange={(e) =>
-                                            atualizarItem(index, {
-                                                quantidade: Number(
-                                                    e.target.value
-                                                ),
-                                            })
+                                            atualizarItem(
+                                                index,
+                                                {
+                                                    quantidade:
+                                                        Number(
+                                                            e
+                                                                .target
+                                                                .value
+                                                        ),
+                                                }
+                                            )
                                         }
                                         fullWidth
                                     />
@@ -560,22 +724,36 @@ function FormEditarCarga({
                                     <TextField
                                         label="Valor unitário"
                                         type="number"
-                                        value={item.valorUnitario}
+                                        value={
+                                            item.valorUnitario
+                                        }
                                         onChange={(e) =>
-                                            atualizarItem(index, {
-                                                valorUnitario: Number(
-                                                    e.target.value
-                                                ),
-                                            })
+                                            atualizarItem(
+                                                index,
+                                                {
+                                                    valorUnitario:
+                                                        Number(
+                                                            e
+                                                                .target
+                                                                .value
+                                                        ),
+                                                }
+                                            )
                                         }
                                         fullWidth
                                     />
 
                                     <Button
                                         variant="outlined"
-                                        startIcon={<SearchIcon />}
+                                        startIcon={
+                                            <SearchIcon />
+                                        }
                                         sx={buttonSx}
-                                        onClick={() => buscarProduto(index)}
+                                        onClick={() =>
+                                            buscarProduto(
+                                                index
+                                            )
+                                        }
                                     >
                                         CONSULTAR
                                     </Button>
@@ -583,48 +761,81 @@ function FormEditarCarga({
                                     <Button
                                         variant="outlined"
                                         color="error"
-                                        startIcon={<DeleteIcon />}
+                                        startIcon={
+                                            <DeleteIcon />
+                                        }
                                         sx={buttonSx}
-                                        onClick={() => removerItem(index)}
+                                        onClick={() =>
+                                            removerItem(
+                                                index
+                                            )
+                                        }
                                     >
                                         REMOVER
                                     </Button>
                                 </Box>
 
                                 {item.produto && (
-                                    <Box sx={resultadoSx}>
+                                    <Box
+                                        sx={resultadoSx}
+                                    >
                                         <Typography variant="body2">
-                                            Código: {item.produto.codigoProduto}
+                                            Código:{" "}
+                                            {
+                                                item.produto
+                                                    .codigoProduto
+                                            }
                                         </Typography>
 
                                         <Typography variant="body2">
-                                            Nome: {item.produto.nomeProduto}
+                                            Nome:{" "}
+                                            {
+                                                item.produto
+                                                    .nomeProduto
+                                            }
                                         </Typography>
 
                                         <Typography variant="body2">
-                                            Medida: {item.produto.medidaProduto}
+                                            Medida:{" "}
+                                            {
+                                                item.produto
+                                                    .medidaProduto
+                                            }
                                         </Typography>
 
                                         <Typography variant="body2">
-                                            Peso: {item.produto.pesoProduto}
+                                            Peso:{" "}
+                                            {
+                                                item.produto
+                                                    .pesoProduto
+                                            }
                                         </Typography>
                                     </Box>
                                 )}
 
-                                {item.erro && <ErroBox mensagem={item.erro} />}
+                                {item.erro && (
+                                    <ErroBox
+                                        mensagem={
+                                            item.erro
+                                        }
+                                    />
+                                )}
                             </Box>
                         ))}
 
                         <Box
                             sx={{
                                 display: "flex",
-                                justifyContent: "flex-start",
+                                justifyContent:
+                                    "flex-start",
                                 marginTop: 2,
                             }}
                         >
                             <Button
                                 variant="outlined"
-                                startIcon={<AddIcon />}
+                                startIcon={
+                                    <AddIcon />
+                                }
                                 sx={{
                                     ...buttonSx,
                                     height: 40,
@@ -639,7 +850,9 @@ function FormEditarCarga({
                     <SectionBox
                         titulo="Dados da Carga"
                         descricao="Informe os dados relacionados ao transporte da carga."
-                        icone={<LocalShippingIcon />}
+                        icone={
+                            <LocalShippingIcon />
+                        }
                     >
                         <Box
                             sx={{
@@ -656,7 +869,9 @@ function FormEditarCarga({
                                 placeholder="Ex: Centro de distribuição"
                                 value={localSaida}
                                 onChange={(e) =>
-                                    setLocalSaida(e.target.value)
+                                    setLocalSaida(
+                                        e.target.value
+                                    )
                                 }
                                 fullWidth
                             />
@@ -666,7 +881,9 @@ function FormEditarCarga({
                                 placeholder="Ex: Transportadora ABC"
                                 value={transportadora}
                                 onChange={(e) =>
-                                    setTransportadora(e.target.value)
+                                    setTransportadora(
+                                        e.target.value
+                                    )
                                 }
                                 fullWidth
                             />
@@ -676,7 +893,9 @@ function FormEditarCarga({
                                 placeholder="Ex: 123456"
                                 value={notaFiscal}
                                 onChange={(e) =>
-                                    setNotaFiscal(e.target.value)
+                                    setNotaFiscal(
+                                        e.target.value
+                                    )
                                 }
                                 fullWidth
                             />
@@ -686,27 +905,117 @@ function FormEditarCarga({
                                 placeholder="Nome do motorista"
                                 value={motorista}
                                 onChange={(e) =>
-                                    setMotorista(e.target.value)
+                                    setMotorista(
+                                        e.target.value
+                                    )
                                 }
                                 fullWidth
                             />
 
-                            <TextField
-                                label="Placa do veículo"
-                                placeholder="Ex: ABC1D23"
-                                value={placaVeiculo}
-                                onChange={(e) =>
-                                    setPlacaVeiculo(e.target.value)
-                                }
-                                fullWidth
-                            />
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    flexDirection:
+                                        "column",
+                                    gap: 2,
+                                    gridColumn: {
+                                        xs: "span 1",
+                                        md: "span 2",
+                                    },
+                                }}
+                            >
+                                <Box
+                                    sx={{
+                                        display: "flex",
+                                        alignItems:
+                                            "center",
+                                        gap: 2,
+                                        width: "100%",
+                                    }}
+                                >
+                                    <TextField
+                                        label="Placa do veículo"
+                                        placeholder="Ex: ABC1D23"
+                                        value={
+                                            placaVeiculo
+                                        }
+                                        onChange={(e) => {
+                                            setPlacaVeiculo(
+                                                e.target.value
+                                            );
+
+                                            setVeiculo(
+                                                null
+                                            );
+
+                                            setErroVeiculo(
+                                                ""
+                                            );
+                                        }}
+                                        sx={{
+                                            flex: 1,
+                                        }}
+                                    />
+
+                                    <Button
+                                        variant="outlined"
+                                        startIcon={
+                                            <SearchIcon />
+                                        }
+                                        sx={buttonSx}
+                                        onClick={
+                                            buscarVeiculo
+                                        }
+                                    >
+                                        CONSULTAR
+                                    </Button>
+                                </Box>
+
+                                {veiculo && (
+                                    <Box
+                                        sx={
+                                            resultadoSx
+                                        }
+                                    >
+                                        <Typography variant="body2">
+                                            Placa:{" "}
+                                            {
+                                                veiculo.placaVeiculo
+                                            }
+                                        </Typography>
+
+                                        <Typography variant="body2">
+                                            Tipo:{" "}
+                                            {
+                                                veiculo.tipoVeiculo
+                                            }
+                                        </Typography>
+
+                                        <Typography variant="body2">
+                                            Capacidade:{" "}
+                                            {
+                                                veiculo.capacidadeVeiculo
+                                            }
+                                        </Typography>
+                                    </Box>
+                                )}
+
+                                {erroVeiculo && (
+                                    <ErroBox
+                                        mensagem={
+                                            erroVeiculo
+                                        }
+                                    />
+                                )}
+                            </Box>
                         </Box>
                     </SectionBox>
 
                     <Box
                         sx={{
                             display: "flex",
-                            justifyContent: "flex-end",
+                            justifyContent:
+                                "flex-end",
                             gap: 2,
                             paddingBottom: 2,
                         }}
@@ -730,15 +1039,21 @@ function FormEditarCarga({
                                 ...buttonSx,
                                 height: 44,
                             }}
-                            onClick={salvarAlteracoes}
+                            onClick={
+                                salvarAlteracoes
+                            }
                             disabled={
                                 salvando ||
                                 carregando ||
                                 !cliente ||
-                                itens.some((item) => !item.produto)
+                                !veiculo ||
+                                itens.some((item) => !item.produto
+                                )
                             }
                         >
-                            {salvando ? "SALVANDO..." : "SALVAR ALTERAÇÕES"}
+                            {salvando
+                                ? "SALVANDO..."
+                                : "SALVAR ALTERAÇÕES"}
                         </Button>
                     </Box>
                 </Box>
