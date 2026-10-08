@@ -12,19 +12,29 @@ import {
 import ListaCargas from "./ListaCargas";
 import FormEditarCarga from "./FormEditarCarga";
 import FormCancelarCarga from "./FormCancelarCarga";
+import FormVisualizarCarga from "./FormVisualizarCarga";
 
 import Header from "../../components/Header/Header";
 import Sidebar from "../../components/Sidebar/Sidebar";
 import PageHeader from "../../components/PageHeader/PageHeader";
 
 function Cargas() {
-
     const [cargas, setCargas] = useState<Carga[]>([]);
 
-    const [cargaSelecionada, setCargaSelecionada] = useState<Carga | null>(null);
-    const [abrirFormulario, setAbrirFormulario] = useState(false);
-    const [abrirCancelamento, setAbrirCancelamento] = useState(false);
-    const [cargaParaCancelar, setCargaParaCancelar] = useState<Carga | null>(null);
+    const [cargaSelecionada, setCargaSelecionada] =
+        useState<Carga | null>(null);
+
+    const [abrirFormulario, setAbrirFormulario] =
+        useState(false);
+
+    const [abrirCancelamento, setAbrirCancelamento] =
+        useState(false);
+
+    const [cargaParaCancelar, setCargaParaCancelar] =
+        useState<Carga | null>(null);
+
+    const [cargaVisualizada, setCargaVisualizada] =
+        useState<Carga | null>(null);
 
     useEffect(() => {
         carregarCargas();
@@ -45,12 +55,13 @@ function Cargas() {
     }
 
     async function confirmarCancelamento() {
-
         if (!cargaParaCancelar) {
             return;
         }
 
-        const idUsuario = Number(localStorage.getItem("idUsuario"));
+        const idUsuario = Number(
+            localStorage.getItem("idUsuario")
+        );
 
         if (!idUsuario) {
             console.error("Usuário não encontrado.");
@@ -67,15 +78,16 @@ function Cargas() {
 
             setAbrirCancelamento(false);
             setCargaParaCancelar(null);
-
         } catch (erro) {
-            console.error("Erro ao cancelar carga:", erro);
+            console.error(
+                "Erro ao cancelar carga:",
+                erro
+            );
         }
     }
 
     return (
         <Box>
-
             <Header />
 
             <Sidebar />
@@ -91,7 +103,6 @@ function Cargas() {
                     paddingTop: 10,
                 }}
             >
-
                 <PageHeader
                     title="Cargas"
                     description="Visualize e gerencie as cargas cadastradas"
@@ -106,45 +117,54 @@ function Cargas() {
                         gap: 3,
                     }}
                 >
-
                     <ListaCargas
                         cargas={cargas}
-
                         editarCarga={(carga) => {
                             setCargaSelecionada(carga);
                             setAbrirFormulario(true);
                         }}
-
-                        cancelarCarga={selecionarCargaParaCancelar}
+                        visualizarCarga={(carga) => {
+                            setCargaVisualizada(carga);
+                        }}
+                        cancelarCarga={
+                            selecionarCargaParaCancelar
+                        }
                     />
-
                 </Box>
-
             </Box>
 
             <FormEditarCarga
                 abrir={abrirFormulario}
                 carga={cargaSelecionada}
-
                 fechar={() => {
                     setAbrirFormulario(false);
                     setCargaSelecionada(null);
                 }}
-
                 atualizar={carregarCargas}
+            />
+
+            <FormVisualizarCarga
+                abrir={cargaVisualizada !== null}
+                carga={cargaVisualizada}
+                fechar={() => {
+                    setCargaVisualizada(null);
+                }}
+                imprimir={() => {
+                    console.log(
+                        "Imprimir carga:",
+                        cargaVisualizada
+                    );
+                }}
             />
 
             <FormCancelarCarga
                 abrir={abrirCancelamento}
-
                 fechar={() => {
                     setAbrirCancelamento(false);
                     setCargaParaCancelar(null);
                 }}
-
                 cancelar={confirmarCancelamento}
             />
-
         </Box>
     );
 }

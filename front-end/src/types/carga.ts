@@ -1,3 +1,5 @@
+import type { Veiculo } from "./veiculo";
+
 export type Item = {
     codigoProduto: number;
     quantidade: number;
@@ -7,6 +9,7 @@ export type Item = {
         codigoProduto: number;
         nomeProduto: string;
         medidaProduto: string;
+        pesoProduto: number;
     };
 };
 
@@ -35,9 +38,7 @@ export type Carga = {
         dataEntrega: string;
         motorista: string;
 
-        veiculo: {
-            placaVeiculo: string;
-        } | null;
+        veiculo: Veiculo | null;
 
         dataCriacao: string;
     };

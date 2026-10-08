@@ -8,24 +8,26 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 import EditIcon from "@mui/icons-material/Edit";
 import VisibilityIcon from "@mui/icons-material/Visibility";
-
 import ScheduleIcon from "@mui/icons-material/Schedule";
 import PendingIcon from "@mui/icons-material/Pending";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
 
 import type { Carga } from "../../types/carga";
+
 import { temPermissao } from "../../services/permissionService";
 
 interface CardCargaProps {
     carga: Carga;
     editarCarga: (carga: Carga) => void;
+    visualizarCarga: (carga: Carga) => void;
     cancelarCarga: (carga: Carga) => void;
 }
 
 function CardCarga({
     carga,
     editarCarga,
+    visualizarCarga,
     cancelarCarga,
 }: CardCargaProps) {
 
@@ -34,15 +36,15 @@ function CardCarga({
             case "PRÓXIMO":
                 return {
                     icone: <ScheduleIcon />,
-                    borda: "warning.main",
-                    fundo: "warning.light",
+                    borda: "info.main",
+                    fundo: "info.light",
                 };
 
             case "PENDENTE":
                 return {
                     icone: <PendingIcon />,
-                    borda: "info.main",
-                    fundo: "info.light",
+                    borda: "warning.main",
+                    fundo: "warning.light",
                 };
 
             case "ENTREGUE":
@@ -143,6 +145,7 @@ function CardCarga({
                         size="small"
                         color="info"
                         title="Visualizar carga"
+                        onClick={() => visualizarCarga(carga)}
                     >
                         <VisibilityIcon fontSize="small" />
                     </IconButton>

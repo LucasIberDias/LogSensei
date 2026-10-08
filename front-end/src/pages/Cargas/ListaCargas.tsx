@@ -7,12 +7,14 @@ import CardCarga from "./CardCarga";
 type ListaCargasProps = {
     cargas: Carga[];
     editarCarga: (carga: Carga) => void;
+    visualizarCarga: (carga: Carga) => void;
     cancelarCarga: (carga: Carga) => void;
 };
 
 function ListaCargas({
     cargas,
     editarCarga,
+    visualizarCarga,
     cancelarCarga,
 }: ListaCargasProps) {
 
@@ -41,6 +43,7 @@ function ListaCargas({
                     key={carga.idCarga}
                     carga={carga}
                     editarCarga={editarCarga}
+                    visualizarCarga={visualizarCarga}
                     cancelarCarga={cancelarCarga}
                 />
             ))}
