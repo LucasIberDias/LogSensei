@@ -37,6 +37,11 @@ public class UsuarioService {
         // Coloco as informações passadas no usuario
         usuario.setNomeUsuario(request.getNomeUsuario());
 
+        // Verifico se já existe um Usuario com o nome passado
+        if(usuarioRepository.findByNomeUsuario(usuario.getNomeUsuario()).isPresent()){
+            throw new RuntimeException("Já existe um usuário com esse nome.");
+        }
+
         // Criptografo a senha e coloco no objeto
         usuario.setSenhaUsuario(passwordEncoder.encode(request.getSenhaUsuario()));
 
