@@ -46,12 +46,6 @@ function Sidebar() {
                 />
 
                 <SidebarItem
-                    icon={<FactCheckIcon />}
-                    text="Controle"
-                    path="/controle-carregamento"
-                />
-
-                <SidebarItem
                     icon={<AddBoxIcon />}
                     text="Cadastros"
                     path="/cadastros"
