@@ -41,4 +41,10 @@ public ResponseEntity<Void> cadastrarUsuario(@Valid @RequestBody UsuarioRequestD
     public ResponseEntity<List<String>> buscarCargos() {
         return ResponseEntity.ok(usuarioService.buscarCargos());
     }
+
+    // UC-GU05: Buscar Usuarios Filial
+    @GetMapping("/filiais")
+    public ResponseEntity<List<String>> buscarUsuariosFilial() {
+        return ResponseEntity.ok(usuarioService.buscarUsuariosFilial());
+    }
 }

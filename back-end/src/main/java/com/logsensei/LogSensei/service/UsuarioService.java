@@ -26,7 +26,8 @@ public class UsuarioService {
         Usuario usuarioAutenticado = usuarioRepository.findById(idUsuario).get();
 
         // Verifico se o usuário tem permissão para cadastrar usuário
-        if (!usuarioAutenticado.getCargo().equals("GERENTE LOGISTICA") && !usuarioAutenticado.getCargo().equals("DESENVOLVEDOR")) {
+        if (!usuarioAutenticado.getCargo().equals("GERENTE LOGISTICA")
+                && !usuarioAutenticado.getCargo().equals("DESENVOLVEDOR")) {
 
             throw new RuntimeException("Você não tem permissão para cadastrar um usuário");
         }
@@ -38,7 +39,7 @@ public class UsuarioService {
         usuario.setNomeUsuario(request.getNomeUsuario());
 
         // Verifico se já existe um Usuario com o nome passado
-        if(usuarioRepository.findByNomeUsuario(usuario.getNomeUsuario()).isPresent()){
+        if (usuarioRepository.findByNomeUsuario(usuario.getNomeUsuario()).isPresent()) {
             throw new RuntimeException("Já existe um usuário com esse nome.");
         }
 
@@ -59,5 +60,10 @@ public class UsuarioService {
     // UC-GU04: Buscar Cargos
     public List<String> buscarCargos() {
         return usuarioRepository.buscarCargos();
+    }
+
+    // UC-GU05: Buscar Usuários Filial
+    public List<String> buscarUsuariosFilial() {
+        return usuarioRepository.buscarUsuariosFilial();
     }
 }
