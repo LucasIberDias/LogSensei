@@ -155,32 +155,22 @@ function CardCarga({
             <Box
                 sx={{
                     padding: 2,
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 1.5,
                 }}
             >
-                <Typography
-                    sx={{
-                        fontWeight: 600,
-                        marginBottom: 1.5,
-                    }}
-                >
+                <Typography sx={{ fontWeight: 600 }}>
                     {carga.ordemCarregamento.cliente.nomeCliente}
                 </Typography>
 
-                <Typography
-                    sx={{
-                        marginBottom: 1.5,
-                    }}
-                >
+                <Typography>
                     Veículo:{" "}
                     {carga.ordemCarregamento.veiculo?.placaVeiculo ||
                         "Não informado"}
                 </Typography>
 
-                <Typography
-                    sx={{
-                        marginBottom: 1.5,
-                    }}
-                >
+                <Typography>
                     Motorista:{" "}
                     {carga.ordemCarregamento.motorista ||
                         "Não informado"}
@@ -189,6 +179,11 @@ function CardCarga({
                 <Typography>
                     Local de carga:{" "}
                     {carga.localSaida || "Não informado"}
+                </Typography>
+
+                <Typography>
+                    Data de Entrega:{" "}
+                    {carga.ordemCarregamento.dataEntrega || "Não informado"}
                 </Typography>
             </Box>
         </Card>
