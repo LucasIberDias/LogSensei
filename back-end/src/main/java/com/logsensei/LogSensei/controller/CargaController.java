@@ -37,7 +37,13 @@ public class CargaController {
     @PatchMapping("/{id}/cancelar")
     public ResponseEntity<Void> cancelarCarga(@PathVariable Long id, @RequestParam Long idUsuario) {
         cargaService.cancelarCarga(idUsuario, id);
-        
+
         return ResponseEntity.noContent().build();
+    }
+
+    // UC-GC05: Listar Cargas para Filial
+    @GetMapping("/filial")
+    public ResponseEntity<List<Carga>> listarCargasFilial(@RequestParam Long idUsuario) {
+        return ResponseEntity.ok(cargaService.listarCargasFilial(idUsuario));
     }
 }

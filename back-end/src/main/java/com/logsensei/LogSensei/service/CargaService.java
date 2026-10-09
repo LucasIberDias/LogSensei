@@ -141,7 +141,7 @@ public class CargaService {
 
         for (Item item : ordem.getItem()) {
 
-            pesoTotal += item.getProduto().getPesoProduto()* item.getQuantidade();
+            pesoTotal += item.getProduto().getPesoProduto() * item.getQuantidade();
         }
 
         carga.setPesoTotal(pesoTotal);
@@ -184,12 +184,13 @@ public class CargaService {
     }
 
     // UC-GC04: Cancelar Carga
-    public void cancelarCarga(Long idUsuario, Long idCarga){
+    public void cancelarCarga(Long idUsuario, Long idCarga) {
         // Pego o usuario que pretende cancelar a carga
         Usuario usuarioAutenticado = usuarioRepository.findById(idUsuario).get();
 
         // Verifico se o usuario tem permissão para cancelar cargas
-        if (!usuarioAutenticado.getCargo().equals("GERENTE LOGISTICA") && !usuarioAutenticado.getCargo().equals("DESENVOLVEDOR")) {
+        if (!usuarioAutenticado.getCargo().equals("GERENTE LOGISTICA")
+                && !usuarioAutenticado.getCargo().equals("DESENVOLVEDOR")) {
             throw new RuntimeException("Você não tem permissão para cancelar cargas");
         }
 
@@ -201,5 +202,19 @@ public class CargaService {
 
         // Salvo as mudanças
         cargaRepository.save(carga);
+    }
+
+    // UC-GC08: Listar Cargas para Filial
+    public List<Carga> listarCargasFilial(Long idUsuario) {
+        // Crio o objeto usuario para verificar seu nome de filial
+        Usuario filial = usuarioRepository.findById(idUsuario).orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
+        // Verifico se o usuario que está fazendo a busca é uma filial
+        if (!filial.getCargo().equals("FILIAL")) {
+            throw new RuntimeException("Apenas filial pode fazer essa visualização");
+        }
+
+        // Faço a busca das cargas de acordo com o nome do local de saida e do usuario filial
+        return cargaRepository.buscarCargasDaFilial(filial.getNomeUsuario());
     }
 }
