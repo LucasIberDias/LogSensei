@@ -30,3 +30,9 @@ export async function buscarCargos(): Promise<string[]> {
     const response = await api.get("/usuarios/cargos");
     return response.data;
 }
+
+// UC-GU05 Buscar Usuarios Filial
+export async function buscarUsuariosFilial(): Promise<string[]> {
+    const response = await api.get("/usuarios/filiais");
+    return response.data;
+}

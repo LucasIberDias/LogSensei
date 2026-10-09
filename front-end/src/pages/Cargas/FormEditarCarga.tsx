@@ -8,6 +8,10 @@ import {
     DialogTitle,
     TextField,
     Typography,
+    FormControl,
+    InputLabel,
+    Select,
+    MenuItem,
 } from "@mui/material";
 
 import PersonIcon from "@mui/icons-material/Person";
@@ -25,6 +29,7 @@ import { buscarClientePorCodigo } from "../../services/clientesService";
 import { buscarProdutoPorCodigo } from "../../services/produtosService";
 import { buscarVeiculoPorPlaca } from "../../services/veiculosService";
 import { atualizarCarga } from "../../services/cargasService";
+import { buscarUsuariosFilial } from "../../services/usuariosService";
 
 import type { Carga } from "../../types/carga";
 import type { Cliente } from "../../types/cliente";
@@ -100,6 +105,7 @@ function FormEditarCarga({
     const [observacao, setObservacao] = useState("");
 
     const [localSaida, setLocalSaida] = useState("");
+    const [filiais, setFiliais] = useState<string[]>([]);
     const [transportadora, setTransportadora] = useState("");
     const [notaFiscal, setNotaFiscal] = useState("");
     const [motorista, setMotorista] = useState("");
@@ -114,6 +120,36 @@ function FormEditarCarga({
     const [carregando, setCarregando] = useState(false);
     const [salvando, setSalvando] = useState(false);
 
+    // Carrega as filiais uma vez, quando o dialog abre
+    useEffect(() => {
+        if (!abrir) return;
+
+        let cancelado = false;
+
+        async function carregarFiliais() {
+            try {
+                const resposta = await buscarUsuariosFilial();
+
+                if (!cancelado) {
+                    setFiliais(resposta);
+                }
+            } catch (error) {
+                console.error("Erro ao buscar filiais:", error);
+
+                if (!cancelado) {
+                    setErro("Não foi possível carregar as filiais.");
+                }
+            }
+        }
+
+        carregarFiliais();
+
+        return () => {
+            cancelado = true;
+        };
+    }, [abrir]);
+
+    // Preenche o formulário com os dados da carga
     useEffect(() => {
         if (!carga || !abrir) {
             return;
@@ -132,17 +168,13 @@ function FormEditarCarga({
         setLocalSaida(carga.localSaida || "");
         setTransportadora(carga.transportadora || "");
         setNotaFiscal(carga.notaFiscal || "");
-
         setMotorista(ordem.motorista || "");
 
         setPlacaVeiculo(ordem.veiculo?.placaVeiculo || "");
         setVeiculo((ordem.veiculo as Veiculo) || null);
         setErroVeiculo("");
 
-        setCodigoCliente(
-            ordem.cliente?.codigoCliente?.toString() || ""
-        );
-
+        setCodigoCliente(ordem.cliente?.codigoCliente?.toString() || "");
         setCliente((ordem.cliente as Cliente) || null);
 
         setItens([itemVazio()]);
@@ -155,10 +187,9 @@ function FormEditarCarga({
 
             if (ordem.cliente?.codigoCliente) {
                 try {
-                    const clienteEncontrado =
-                        await buscarClientePorCodigo(
-                            Number(ordem.cliente.codigoCliente)
-                        );
+                    const clienteEncontrado = await buscarClientePorCodigo(
+                        Number(ordem.cliente.codigoCliente)
+                    );
 
                     if (!cancelado && clienteEncontrado) {
                         setCliente(clienteEncontrado);
@@ -170,10 +201,9 @@ function FormEditarCarga({
 
             if (ordem.veiculo?.placaVeiculo) {
                 try {
-                    const veiculoEncontrado =
-                        await buscarVeiculoPorPlaca(
-                            ordem.veiculo.placaVeiculo
-                        );
+                    const veiculoEncontrado = await buscarVeiculoPorPlaca(
+                        ordem.veiculo.placaVeiculo
+                    );
 
                     if (!cancelado && veiculoEncontrado) {
                         setVeiculo(veiculoEncontrado);
@@ -184,45 +214,39 @@ function FormEditarCarga({
             }
 
             const itensCarregados = await Promise.all(
-                (ordem.item ?? []).map(
-                    async (item): Promise<ItemOrdem> => {
-                        const codigo =
-                            item.produto?.codigoProduto ??
-                            item.codigoProduto;
+                (ordem.item ?? []).map(async (item): Promise<ItemOrdem> => {
+                    const codigo =
+                        item.produto?.codigoProduto ?? item.codigoProduto;
 
-                        try {
-                            const produto =
-                                await buscarProdutoPorCodigo(
-                                    Number(codigo)
-                                );
+                    try {
+                        const produto = await buscarProdutoPorCodigo(
+                            Number(codigo)
+                        );
 
-                            return {
-                                codigoProduto: String(codigo),
-                                quantidade: item.quantidade,
-                                valorUnitario: item.valorUnitario,
-                                produto,
-                                erro: "",
-                            };
-                        } catch (error) {
-                            console.error(error);
+                        return {
+                            codigoProduto: String(codigo),
+                            quantidade: item.quantidade,
+                            valorUnitario: item.valorUnitario,
+                            produto,
+                            erro: "",
+                        };
+                    } catch (error) {
+                        console.error(error);
 
-                            return {
-                                codigoProduto: String(codigo),
-                                quantidade: item.quantidade,
-                                valorUnitario: item.valorUnitario,
-                                produto: null,
-                                erro: "Produto não possui cadastro.",
-                            };
-                        }
+                        return {
+                            codigoProduto: String(codigo),
+                            quantidade: item.quantidade,
+                            valorUnitario: item.valorUnitario,
+                            produto: null,
+                            erro: "Produto não possui cadastro.",
+                        };
                     }
-                )
+                })
             );
 
             if (!cancelado) {
                 setItens(
-                    itensCarregados.length > 0
-                        ? itensCarregados
-                        : [itemVazio()]
+                    itensCarregados.length > 0 ? itensCarregados : [itemVazio()]
                 );
 
                 setCarregando(false);
@@ -864,17 +888,26 @@ function FormEditarCarga({
                                 gap: 2,
                             }}
                         >
-                            <TextField
-                                label="Local de saída"
-                                placeholder="Ex: Centro de distribuição"
-                                value={localSaida}
-                                onChange={(e) =>
-                                    setLocalSaida(
-                                        e.target.value
-                                    )
-                                }
-                                fullWidth
-                            />
+                            <FormControl fullWidth>
+                                <InputLabel id="local-saida-label">Local de Saída</InputLabel>
+
+                                <Select
+                                    labelId="local-saida-label"
+                                    value={localSaida}
+                                    label="Local de Saída"
+                                    onChange={(e) => setLocalSaida(e.target.value)}
+                                >
+                                    {localSaida && !filiais.includes(localSaida) && (
+                                        <MenuItem value={localSaida}>{localSaida}</MenuItem>
+                                    )}
+
+                                    {filiais.map((item) => (
+                                        <MenuItem key={item} value={item}>
+                                            {item}
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
 
                             <TextField
                                 label="Transportadora"
