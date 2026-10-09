@@ -8,7 +8,6 @@ import com.logsensei.LogSensei.dto.carga.AtualizarCargaRequestDTO;
 import com.logsensei.LogSensei.dto.item.ItemRequestDTO;
 
 import com.logsensei.LogSensei.model.Carga;
-import com.logsensei.LogSensei.model.ControleCarregamento;
 import com.logsensei.LogSensei.model.Item;
 import com.logsensei.LogSensei.model.OrdemCarregamento;
 import com.logsensei.LogSensei.model.Produto;
@@ -16,7 +15,6 @@ import com.logsensei.LogSensei.model.Usuario;
 
 import com.logsensei.LogSensei.repository.CargaRepository;
 import com.logsensei.LogSensei.repository.ClienteRepository;
-import com.logsensei.LogSensei.repository.ControleCarregamentoRepository;
 import com.logsensei.LogSensei.repository.ProdutoRepository;
 import com.logsensei.LogSensei.repository.UsuarioRepository;
 import com.logsensei.LogSensei.repository.VeiculoRepository;
@@ -29,22 +27,19 @@ public class CargaService {
     private final VeiculoRepository veiculoRepository;
     private final UsuarioRepository usuarioRepository;
     private final ProdutoRepository produtoRepository;
-    private final ControleCarregamentoRepository controleCarregamentoRepository;
 
     public CargaService(
             CargaRepository cargaRepository,
             ClienteRepository clienteRepository,
             VeiculoRepository veiculoRepository,
             UsuarioRepository usuarioRepository,
-            ProdutoRepository produtoRepository,
-            ControleCarregamentoRepository controleCarregamentoRepository) {
+            ProdutoRepository produtoRepository) {
 
         this.cargaRepository = cargaRepository;
         this.clienteRepository = clienteRepository;
         this.veiculoRepository = veiculoRepository;
         this.usuarioRepository = usuarioRepository;
         this.produtoRepository = produtoRepository;
-        this.controleCarregamentoRepository = controleCarregamentoRepository;
     }
 
     // UC-GC02: Listar Cargas
@@ -186,16 +181,6 @@ public class CargaService {
         }
 
         cargaRepository.save(carga);
-
-        if (carga.getStatus().equals("ENTREGUE")
-                && !controleCarregamentoRepository.existsByCarga(carga)) {
-
-            ControleCarregamento controleCarregamento = new ControleCarregamento();
-
-            controleCarregamento.setCarga(carga);
-
-            controleCarregamentoRepository.save(controleCarregamento);
-        }
     }
 
     // UC-GC04: Cancelar Carga
@@ -204,7 +189,7 @@ public class CargaService {
         Usuario usuarioAutenticado = usuarioRepository.findById(idUsuario).get();
 
         // Verifico se o usuario tem permissão para cancelar cargas
-        if (usuarioAutenticado.getCargo().equals("GERENTE LOGISTICA") && usuarioAutenticado.getCargo().equals("DESENVOLVEDOR")) {
+        if (!usuarioAutenticado.getCargo().equals("GERENTE LOGISTICA") && !usuarioAutenticado.getCargo().equals("DESENVOLVEDOR")) {
             throw new RuntimeException("Você não tem permissão para cancelar cargas");
         }
 
