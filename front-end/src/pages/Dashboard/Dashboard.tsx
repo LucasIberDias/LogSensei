@@ -57,14 +57,14 @@ interface Carga {
 
         cliente: {
             nomeCliente: string;
-        };
+        } | null;
 
         motorista: string | null;
 
         veiculo: {
             placaVeiculo: string;
         } | null;
-    };
+    } | null;
 }
 
 type CorTema = "primary" | "info" | "warning" | "success" | "error";
@@ -83,18 +83,42 @@ const KG_POR_TONELADA = 1000;
 const LIMITE_VEICULOS = 8;
 const LIMITE_RANKING = 5;
 
-function normalizar(texto?: string) {
+// Remove acentos, aspas, símbolos e caracteres invisíveis (ex.: espaço não separável),
+// deixa tudo em maiúsculas e colapsa espaços repetidos.
+function normalizar(texto?: string | null) {
     return (texto ?? "")
         .normalize("NFD")
         .replace(/[\u0300-\u036f]/g, "")
         .toUpperCase()
+        .replace(/[^A-Z0-9]+/g, " ")
         .trim();
 }
 
 const CARGOS_PERMITIDOS = ["DESENVOLVEDOR", "ANALISTA", "GERENTE LOGISTICA"];
 
 function temPermissao(cargo?: string | null) {
-    return CARGOS_PERMITIDOS.includes(normalizar(cargo ?? ""));
+    return CARGOS_PERMITIDOS.includes(normalizar(cargo));
+}
+
+// Lê o cargo do localStorage. Tenta algumas chaves comuns e aceita
+// valor salvo como JSON (com aspas).
+function lerCargoUsuario(): string | null {
+    const chaves = ["cargoUsuario", "cargo", "perfil", "tipoUsuario"];
+
+    for (const chave of chaves) {
+        const valor = localStorage.getItem(chave);
+
+        if (valor) {
+            try {
+                const convertido = JSON.parse(valor);
+                return typeof convertido === "string" ? convertido : valor;
+            } catch {
+                return valor;
+            }
+        }
+    }
+
+    return null;
 }
 
 function corDoStatus(status: string): CorTema | "default" {
@@ -209,6 +233,25 @@ const cardSx = {
     border: "1px solid",
     borderColor: "divider",
     boxShadow: "none",
+};
+
+const tabelaContainerSx = {
+    border: "1px solid",
+    borderColor: "divider",
+};
+
+const cabecalhoTabelaSx = {
+    "& th": {
+        fontWeight: 700,
+        color: "text.secondary",
+        backgroundColor: (theme: any) => alpha(theme.palette.primary.main, 0.04),
+    },
+};
+
+const ultimaLinhaSx = {
+    "&:last-child td": {
+        borderBottom: "none",
+    },
 };
 
 function IconeColorido({ cor, children }: { cor: CorTema; children: ReactNode }) {
@@ -373,7 +416,7 @@ function RankingCard({ titulo, icon, itens, vazio }: RankingCardProps) {
 
 function Dashboard() {
     const nomeUsuario = localStorage.getItem("nomeUsuario");
-    const cargoUsuario = localStorage.getItem("cargoUsuario");
+    const cargoUsuario = lerCargoUsuario();
 
     const autorizado = temPermissao(cargoUsuario);
 
@@ -388,28 +431,24 @@ function Dashboard() {
             return;
         }
 
+        async function buscarCargas() {
+            try {
+                setCarregando(true);
+                setErro("");
+
+                const resposta = await api.get("/cargas");
+
+                setCargas(Array.isArray(resposta.data) ? resposta.data : []);
+            } catch (error) {
+                console.error(error);
+                setErro("Não foi possível carregar os dados do dashboard.");
+            } finally {
+                setCarregando(false);
+            }
+        }
+
         buscarCargas();
     }, [autorizado]);
-
-    useEffect(() => {
-        buscarCargas();
-    }, []);
-
-    async function buscarCargas() {
-        try {
-            setCarregando(true);
-            setErro("");
-
-            const resposta = await api.get("/cargas");
-
-            setCargas(resposta.data);
-        } catch (error) {
-            console.error(error);
-            setErro("Não foi possível carregar os dados do dashboard.");
-        } finally {
-            setCarregando(false);
-        }
-    }
 
     const metricas = useMemo(() => {
         const hoje = dataLocalISO();
@@ -945,30 +984,11 @@ function Dashboard() {
                                         <TableContainer
                                             component={Paper}
                                             elevation={0}
-                                            sx={{
-                                                border: "1px solid",
-                                                borderColor: "divider",
-                                            }}
+                                            sx={tabelaContainerSx}
                                         >
                                             <Table>
                                                 <TableHead>
-                                                    <TableRow
-                                                        sx={{
-                                                            "& th": {
-                                                                fontWeight: 700,
-                                                                color: "text.secondary",
-                                                                backgroundColor: (
-                                                                    theme
-                                                                ) =>
-                                                                    alpha(
-                                                                        theme.palette
-                                                                            .primary
-                                                                            .main,
-                                                                        0.04
-                                                                    ),
-                                                            },
-                                                        }}
-                                                    >
+                                                    <TableRow sx={cabecalhoTabelaSx}>
                                                         <TableCell>Veículo</TableCell>
                                                         <TableCell sx={{ minWidth: 160 }}>
                                                             Cargas
@@ -987,12 +1007,7 @@ function Dashboard() {
                                                             <TableRow
                                                                 key={veiculo.nome}
                                                                 hover
-                                                                sx={{
-                                                                    "&:last-child td": {
-                                                                        borderBottom:
-                                                                            "none",
-                                                                    },
-                                                                }}
+                                                                sx={ultimaLinhaSx}
                                                             >
                                                                 <TableCell
                                                                     sx={{ fontWeight: 600 }}
@@ -1150,27 +1165,11 @@ function Dashboard() {
                                     <TableContainer
                                         component={Paper}
                                         elevation={0}
-                                        sx={{
-                                            border: "1px solid",
-                                            borderColor: "divider",
-                                        }}
+                                        sx={tabelaContainerSx}
                                     >
                                         <Table>
                                             <TableHead>
-                                                <TableRow
-                                                    sx={{
-                                                        "& th": {
-                                                            fontWeight: 700,
-                                                            color: "text.secondary",
-                                                            backgroundColor: (theme) =>
-                                                                alpha(
-                                                                    theme.palette.primary
-                                                                        .main,
-                                                                    0.04
-                                                                ),
-                                                        },
-                                                    }}
-                                                >
+                                                <TableRow sx={cabecalhoTabelaSx}>
                                                     <TableCell>Pedido</TableCell>
                                                     <TableCell>Cliente</TableCell>
                                                     <TableCell>Endereço</TableCell>
@@ -1185,41 +1184,32 @@ function Dashboard() {
                                                     <TableRow
                                                         key={carga.idCarga}
                                                         hover
-                                                        sx={{
-                                                            "&:last-child td": {
-                                                                borderBottom: "none",
-                                                            },
-                                                        }}
+                                                        sx={ultimaLinhaSx}
                                                     >
                                                         <TableCell>
-                                                            {
-                                                                carga.ordemCarregamento
-                                                                    .numeroPedido
-                                                            }
-                                                        </TableCell>
-
-                                                        <TableCell>
-                                                            {
-                                                                carga.ordemCarregamento
-                                                                    .cliente.nomeCliente
-                                                            }
-                                                        </TableCell>
-
-                                                        <TableCell>
-                                                            {
-                                                                carga.ordemCarregamento
-                                                                    .endereco
-                                                            }
+                                                            {carga.ordemCarregamento
+                                                                ?.numeroPedido ?? "-"}
                                                         </TableCell>
 
                                                         <TableCell>
                                                             {carga.ordemCarregamento
-                                                                .motorista || "-"}
+                                                                ?.cliente?.nomeCliente ??
+                                                                "-"}
                                                         </TableCell>
 
                                                         <TableCell>
                                                             {carga.ordemCarregamento
-                                                                .veiculo?.placaVeiculo ||
+                                                                ?.endereco ?? "-"}
+                                                        </TableCell>
+
+                                                        <TableCell>
+                                                            {carga.ordemCarregamento
+                                                                ?.motorista || "-"}
+                                                        </TableCell>
+
+                                                        <TableCell>
+                                                            {carga.ordemCarregamento
+                                                                ?.veiculo?.placaVeiculo ||
                                                                 "-"}
                                                         </TableCell>
 
