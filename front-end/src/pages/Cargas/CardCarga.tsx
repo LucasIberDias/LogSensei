@@ -19,11 +19,10 @@ import { permissaoPadrao, temPermissao } from "../../services/permissionService"
 
 interface CardCargaProps {
     carga: Carga;
-    editarCarga: (carga: Carga) => void;
+    editarCarga?: (carga: Carga) => void;
     visualizarCarga: (carga: Carga) => void;
-    cancelarCarga: (carga: Carga) => void;
+    cancelarCarga?: (carga: Carga) => void;
 }
-
 
 function formatarData(data: string | null | undefined): string {
     if (!data) {
@@ -40,7 +39,6 @@ function formatarData(data: string | null | undefined): string {
         timeZone: "UTC",
     });
 }
-
 
 function CardCarga({
     carga,
@@ -129,27 +127,27 @@ function CardCarga({
 
                     <Typography
                         variant="h6"
-                        sx={{
-                            fontWeight: 600,
-                        }}
+                        sx={{ fontWeight: 600 }}
                     >
                         Carga #{carga.idCarga}
                     </Typography>
                 </Box>
 
                 <Box>
-                    {(temPermissao("GERENTE LOGISTICA") || temPermissao("DESENVOLVEDOR")) && (
-                        <IconButton
-                            size="small"
-                            color="error"
-                            title="Cancelar carga"
-                            onClick={() => cancelarCarga(carga)}
-                        >
-                            <CloseIcon fontSize="small" />
-                        </IconButton>
-                    )}
+                    {cancelarCarga &&
+                        (temPermissao("GERENTE LOGISTICA") ||
+                            temPermissao("DESENVOLVEDOR")) && (
+                            <IconButton
+                                size="small"
+                                color="error"
+                                title="Cancelar carga"
+                                onClick={() => cancelarCarga(carga)}
+                            >
+                                <CloseIcon fontSize="small" />
+                            </IconButton>
+                        )}
 
-                    {permissaoPadrao() && (
+                    {editarCarga && permissaoPadrao() && (
                         <IconButton
                             size="small"
                             color="warning"
@@ -160,16 +158,15 @@ function CardCarga({
                         </IconButton>
                     )}
 
-                    {permissaoPadrao() && (
-                        <IconButton
-                            size="small"
-                            color="info"
-                            title="Visualizar carga"
-                            onClick={() => visualizarCarga(carga)}
-                        >
-                            <VisibilityIcon fontSize="small" />
-                        </IconButton>
-                    )}
+
+                    <IconButton
+                        size="small"
+                        color="info"
+                        title="Visualizar carga"
+                        onClick={() => visualizarCarga(carga)}
+                    >
+                        <VisibilityIcon fontSize="small" />
+                    </IconButton>
                 </Box>
             </Box>
 

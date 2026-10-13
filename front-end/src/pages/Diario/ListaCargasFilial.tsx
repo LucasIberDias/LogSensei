@@ -2,13 +2,21 @@ import { Box, Typography } from "@mui/material";
 
 import type { Carga } from "../../types/carga";
 
-import CardCargaFilial from "./CardCargaFilial";
+import CardCarga from "../Cargas/CardCarga";
 
 type ListaCargasProps = {
     cargas: Carga[];
+    editarCarga?: (carga: Carga) => void;
+    visualizarCarga: (carga: Carga) => void;
+    cancelarCarga?: (carga: Carga) => void;
 };
 
-function ListaCargas({ cargas }: ListaCargasProps) {
+function ListaCargas({
+    cargas,
+    editarCarga,
+    visualizarCarga,
+    cancelarCarga,
+}: ListaCargasProps) {
 
     if (cargas.length === 0) {
         return (
@@ -31,9 +39,12 @@ function ListaCargas({ cargas }: ListaCargasProps) {
             }}
         >
             {cargas.map((carga) => (
-                <CardCargaFilial
+                <CardCarga
                     key={carga.idCarga}
                     carga={carga}
+                    editarCarga={editarCarga}
+                    visualizarCarga={visualizarCarga}
+                    cancelarCarga={cancelarCarga}
                 />
             ))}
         </Box>

@@ -7,6 +7,8 @@ import Header from "../../components/Header/Header";
 import Sidebar from "../../components/Sidebar/Sidebar";
 import PageHeader from "../../components/PageHeader/PageHeader";
 import ListaCargasFilial from "./ListaCargasFilial";
+import FormVisualizarCarga from "../Cargas/FormVisualizarCarga";
+import imprimirCarga from "../Cargas/ImprimirCarga";
 
 import { listarCargasFilial } from "../../services/cargasService";
 
@@ -14,6 +16,7 @@ import type { Carga } from "../../types/carga";
 
 function Cargas() {
     const [cargas, setCargas] = useState<Carga[]>([]);
+    const [cargaVisualizada, setCargaVisualizada] = useState<Carga | null>(null);
 
     async function carregarCargas() {
         try {
@@ -65,9 +68,25 @@ function Cargas() {
                 />
 
                 <Box sx={{ marginTop: 3 }}>
-                    <ListaCargasFilial cargas={cargas} />
+                    <ListaCargasFilial cargas={cargas}
+                        visualizarCarga={(carga) => {
+                            setCargaVisualizada(carga);
+                        }}
+                    />
                 </Box>
             </Box>
+            <FormVisualizarCarga
+                abrir={cargaVisualizada !== null}
+                carga={cargaVisualizada}
+                fechar={() => {
+                    setCargaVisualizada(null);
+                }}
+                imprimir={() => {
+                    if (cargaVisualizada) {
+                        imprimirCarga(cargaVisualizada);
+                    }
+                }}
+            />
         </Box>
     );
 }

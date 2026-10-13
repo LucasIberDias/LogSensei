@@ -14,6 +14,7 @@ import ListaCargas from "./ListaCargas";
 import FormEditarCarga from "./FormEditarCarga";
 import FormCancelarCarga from "./FormCancelarCarga";
 import FormVisualizarCarga from "./FormVisualizarCarga";
+import imprimirCarga from "./ImprimirCarga";
 
 import Header from "../../components/Header/Header";
 import Sidebar from "../../components/Sidebar/Sidebar";
@@ -264,10 +265,9 @@ function Cargas() {
                     setCargaVisualizada(null);
                 }}
                 imprimir={() => {
-                    console.log(
-                        "Imprimir carga:",
-                        cargaVisualizada
-                    );
+                    if (cargaVisualizada) {
+                        imprimirCarga(cargaVisualizada);
+                    }
                 }}
             />
 
