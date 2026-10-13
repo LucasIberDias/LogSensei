@@ -20,6 +20,7 @@ import {
     Typography,
 } from "@mui/material";
 import { alpha } from "@mui/material/styles";
+import LockRoundedIcon from "@mui/icons-material/LockRounded";
 
 import LocalShippingRoundedIcon from "@mui/icons-material/LocalShippingRounded";
 import PendingActionsRoundedIcon from "@mui/icons-material/PendingActionsRounded";
@@ -88,6 +89,12 @@ function normalizar(texto?: string) {
         .replace(/[\u0300-\u036f]/g, "")
         .toUpperCase()
         .trim();
+}
+
+const CARGOS_PERMITIDOS = ["DESENVOLVEDOR", "ANALISTA", "GERENTE LOGISTICA"];
+
+function temPermissao(cargo?: string | null) {
+    return CARGOS_PERMITIDOS.includes(normalizar(cargo ?? ""));
 }
 
 function corDoStatus(status: string): CorTema | "default" {
@@ -366,10 +373,23 @@ function RankingCard({ titulo, icon, itens, vazio }: RankingCardProps) {
 
 function Dashboard() {
     const nomeUsuario = localStorage.getItem("nomeUsuario");
+    const cargoUsuario = localStorage.getItem("cargoUsuario");
+
+    const autorizado = temPermissao(cargoUsuario);
 
     const [cargas, setCargas] = useState<Carga[]>([]);
     const [carregando, setCarregando] = useState(true);
     const [erro, setErro] = useState("");
+
+    useEffect(() => {
+        // Sem permissão, não busca os dados
+        if (!autorizado) {
+            setCarregando(false);
+            return;
+        }
+
+        buscarCargas();
+    }, [autorizado]);
 
     useEffect(() => {
         buscarCargas();
@@ -519,6 +539,39 @@ function Dashboard() {
             mediaCargasPorVeiculo,
         };
     }, [cargas]);
+
+    if (!autorizado) {
+        return (
+            <Box>
+                <Header />
+
+                <Sidebar />
+
+                <Box
+                    component="main"
+                    sx={{
+                        marginLeft: { xs: 0, md: "240px" },
+                        padding: 3,
+                        paddingTop: 10,
+                    }}
+                >
+                    <PageHeader
+                        title="Dashboard"
+                        description={`Bem-vindo, ${nomeUsuario ?? ""}!`}
+                    />
+
+                    <Alert
+                        severity="warning"
+                        icon={<LockRoundedIcon />}
+                        sx={{ marginTop: 2 }}
+                    >
+                        Você não tem permissão para visualizar os indicadores do
+                        dashboard.
+                    </Alert>
+                </Box>
+            </Box>
+        );
+    }
 
     return (
         <Box>

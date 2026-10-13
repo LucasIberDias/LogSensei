@@ -37,7 +37,7 @@ function AppRoutes() {
                 <Route
                     path="/"
                     element={
-                        token
+                        token 
                             ? <Dashboard />
                             : <Navigate to="/login" />
                     }
@@ -46,7 +46,7 @@ function AppRoutes() {
                 <Route
                     path="/ordem"
                     element={
-                        token
+                        token && podeAcessarPadrao
                             ? <Ordem />
                             : <Navigate to="/login" />
                     }
@@ -55,7 +55,7 @@ function AppRoutes() {
                 <Route
                     path="/cargas"
                     element={
-                        token
+                        token && podeAcessarPadrao
                             ? <Cargas />
                             : <Navigate to="/login" />
                     }
@@ -64,7 +64,7 @@ function AppRoutes() {
                 <Route
                     path="/cadastros"
                     element={
-                        token
+                        token && podeAcessarPadrao
                             ? <Cadastros />
                             : <Navigate to="/login" />
                     }
