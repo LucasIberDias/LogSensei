@@ -16,8 +16,8 @@ public interface CargaRepository extends JpaRepository<Carga, Long> {
     @Query("""
                 SELECT c
                 FROM Carga c
-                WHERE c.localSaida = :nomeFilial
+                WHERE c.localSaida = :nomeUsuario
                 AND c.status = 'PRÓXIMO'
             """)
-    List<Carga> buscarCargasDaFilial(@Param("nomeFilial") String nomeFilial);
+    List<Carga> buscarCargasDaFilial(@Param("nomeUsuario") String nomeUsuario);
 }

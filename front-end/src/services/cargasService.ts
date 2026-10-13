@@ -14,11 +14,22 @@ export async function atualizarCarga(dados: AtualizarCargaRequest): Promise<void
     await api.patch("/cargas", dados);
 }
 
-// UC_GC04: Cancelar Carga
+// UC-GC04: Cancelar Carga
 export async function cancelarCarga(idCarga: number, idUsuario: number): Promise<void> {
     await api.patch(`/cargas/${idCarga}/cancelar`, null, {
         params: {
             idUsuario,
         },
     });
+}
+
+// UC-GC08: Listar Cargas para Filial
+export async function listarCargasFilial(): Promise<Carga[]> {
+    const idUsuario = localStorage.getItem("idUsuario");
+
+    const response = await api.get<Carga[]>("/cargas/filial", {
+        params: { idUsuario },
+    });
+
+    return response.data;
 }

@@ -15,7 +15,7 @@ import CancelIcon from "@mui/icons-material/Cancel";
 
 import type { Carga } from "../../types/carga";
 
-import { temPermissao } from "../../services/permissionService";
+import { permissaoPadrao, temPermissao } from "../../services/permissionService";
 
 interface CardCargaProps {
     carga: Carga;
@@ -23,6 +23,24 @@ interface CardCargaProps {
     visualizarCarga: (carga: Carga) => void;
     cancelarCarga: (carga: Carga) => void;
 }
+
+
+function formatarData(data: string | null | undefined): string {
+    if (!data) {
+        return "Não informado";
+    }
+
+    const dataFormatada = new Date(data);
+
+    if (isNaN(dataFormatada.getTime())) {
+        return "Não informado";
+    }
+
+    return dataFormatada.toLocaleDateString("pt-BR", {
+        timeZone: "UTC",
+    });
+}
+
 
 function CardCarga({
     carga,
@@ -120,35 +138,38 @@ function CardCarga({
                 </Box>
 
                 <Box>
-                    {(temPermissao("GERENTE LOGISTICA") ||
-                        temPermissao("DESENVOLVEDOR")) && (
-                            <IconButton
-                                size="small"
-                                color="error"
-                                title="Cancelar carga"
-                                onClick={() => cancelarCarga(carga)}
-                            >
-                                <CloseIcon fontSize="small" />
-                            </IconButton>
-                        )}
+                    {(temPermissao("GERENTE LOGISTICA") || temPermissao("DESENVOLVEDOR")) && (
+                        <IconButton
+                            size="small"
+                            color="error"
+                            title="Cancelar carga"
+                            onClick={() => cancelarCarga(carga)}
+                        >
+                            <CloseIcon fontSize="small" />
+                        </IconButton>
+                    )}
 
-                    <IconButton
-                        size="small"
-                        color="warning"
-                        title="Editar carga"
-                        onClick={() => editarCarga(carga)}
-                    >
-                        <EditIcon fontSize="small" />
-                    </IconButton>
+                    {permissaoPadrao() && (
+                        <IconButton
+                            size="small"
+                            color="warning"
+                            title="Editar carga"
+                            onClick={() => editarCarga(carga)}
+                        >
+                            <EditIcon fontSize="small" />
+                        </IconButton>
+                    )}
 
-                    <IconButton
-                        size="small"
-                        color="info"
-                        title="Visualizar carga"
-                        onClick={() => visualizarCarga(carga)}
-                    >
-                        <VisibilityIcon fontSize="small" />
-                    </IconButton>
+                    {permissaoPadrao() && (
+                        <IconButton
+                            size="small"
+                            color="info"
+                            title="Visualizar carga"
+                            onClick={() => visualizarCarga(carga)}
+                        >
+                            <VisibilityIcon fontSize="small" />
+                        </IconButton>
+                    )}
                 </Box>
             </Box>
 
@@ -183,7 +204,7 @@ function CardCarga({
 
                 <Typography>
                     Data de Entrega:{" "}
-                    {carga.ordemCarregamento.dataEntrega || "Não informado"}
+                    {formatarData(carga.ordemCarregamento.dataEntrega)}
                 </Typography>
             </Box>
         </Card>
