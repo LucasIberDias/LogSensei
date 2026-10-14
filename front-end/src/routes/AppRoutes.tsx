@@ -24,6 +24,7 @@ function AppRoutes() {
     const podeAcessarGeral = temPermissao("GERENTE LOGISTICA") || temPermissao("DESENVOLVEDOR");
     const podeAcessarPadrao = temPermissao("GERENTE LOGISTICA") || temPermissao("DESENVOLVEDOR") || temPermissao("ANALISTA");
     const podeAcessarFilial = temPermissao("FILIAL");
+    const podeAcessarComum = temPermissao("GERENTE LOGISTICA") || temPermissao("DESENVOLVEDOR") || temPermissao("ANALISTA") || temPermissao("FILIAL");
 
     return (
         <BrowserRouter>
@@ -46,7 +47,7 @@ function AppRoutes() {
                 <Route
                     path="/ordem"
                     element={
-                        token && podeAcessarPadrao
+                        token && podeAcessarComum
                             ? <Ordem />
                             : <Navigate to="/login" />
                     }
@@ -75,7 +76,7 @@ function AppRoutes() {
                     element={
                         token && podeAcessarGeral
                             ? <Usuarios />
-                            : <Navigate to="/" replace />
+                            : <Navigate to="/login"/>
                     }
                 />
 
@@ -84,7 +85,7 @@ function AppRoutes() {
                     element={
                         token && podeAcessarPadrao
                             ? <Clientes />
-                            : <Navigate to="/" replace />
+                            : <Navigate to="/login" />
                     }
                 />
 
@@ -93,7 +94,7 @@ function AppRoutes() {
                     element={
                         token && podeAcessarPadrao
                             ? <Produtos />
-                            : <Navigate to="/" replace />
+                            : <Navigate to="/login"/>
                     }
                 />
 
@@ -102,7 +103,7 @@ function AppRoutes() {
                     element={
                         token && podeAcessarPadrao
                             ? <Veiculos />
-                            : <Navigate to="/" replace />
+                            : <Navigate to="/login" />
                     }
                 />
 
@@ -111,7 +112,7 @@ function AppRoutes() {
                     element={
                         token && podeAcessarFilial
                             ? <Diario />
-                            : <Navigate to="/" replace />
+                            : <Navigate to="/login"/>
                     }
                 />
 

@@ -14,7 +14,7 @@ import { temPermissao } from "../../services/permissionService";
 
 function Sidebar() {
     const podeAcessarPadrao = temPermissao("GERENTE LOGISTICA") || temPermissao("DESENVOLVEDOR") || temPermissao("ANALISTA");
-    const podeAcessarDiario = temPermissao("FILIAL");
+    const podeAcessarFilial = temPermissao("FILIAL");
 
     return (
         <Box
@@ -59,7 +59,7 @@ function Sidebar() {
                     />
                 )}
 
-                {podeAcessarDiario && (
+                {podeAcessarFilial && (
                     <SidebarItem
                         icon={<MenuBookIcon />}
                         text="Diário"
