@@ -94,6 +94,7 @@ function CardCarga({
                 borderRadius: 2,
                 overflow: "hidden",
                 boxShadow: 1
+                
             }}
         >
             <Box
