@@ -8,13 +8,14 @@ import AssignmentIcon from "@mui/icons-material/Assignment";
 import LocalShippingIcon from "@mui/icons-material/LocalShipping";
 import AddBoxIcon from "@mui/icons-material/AddBox";
 import MenuBookIcon from "@mui/icons-material/MenuBook";
+import SwapHorizIcon from "@mui/icons-material/SwapHoriz";
 
 import SidebarItem from "./SidebarItem";
 import { temPermissao } from "../../services/permissionService";
 
 function Sidebar() {
     const podeAcessarPadrao = temPermissao("GERENTE LOGISTICA") || temPermissao("DESENVOLVEDOR") || temPermissao("ANALISTA");
-    const podeAcessarDiario = temPermissao("FILIAL");
+    const podeAcessarFilial = temPermissao("FILIAL");
 
     return (
         <Box
@@ -59,11 +60,19 @@ function Sidebar() {
                     />
                 )}
 
-                {podeAcessarDiario && (
+                {podeAcessarFilial && (
                     <SidebarItem
                         icon={<MenuBookIcon />}
                         text="Diário"
                         path="/diario"
+                    />
+                )}
+
+                {podeAcessarFilial && (
+                    <SidebarItem
+                        icon={<SwapHorizIcon />}
+                        text="Transferência"
+                        path="/transferencia"
                     />
                 )}
             </List>

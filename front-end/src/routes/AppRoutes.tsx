@@ -15,6 +15,7 @@ import Clientes from "../pages/Cadastros/Clientes/Clientes";
 import Produtos from "../pages/Cadastros/Produtos/Produtos";
 import Veiculos from "../pages/Cadastros/Veiculos/Veiculos";
 import Diario from  "../pages/Diario/Diario";
+import Transferencia from "../pages/Transferencia/Transferencia";
 
 import { temPermissao } from "../services/permissionService";
 
@@ -111,6 +112,15 @@ function AppRoutes() {
                     element={
                         token && podeAcessarFilial
                             ? <Diario />
+                            : <Navigate to="/" replace />
+                    }
+                />
+
+                <Route
+                    path="/transferencia"
+                    element={
+                        token && podeAcessarFilial
+                            ? <Transferencia />
                             : <Navigate to="/" replace />
                     }
                 />
