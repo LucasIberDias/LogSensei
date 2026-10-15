@@ -13,8 +13,6 @@ import SearchIcon from "@mui/icons-material/Search";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
 
-import Header from "../../components/Header/Header";
-import Sidebar from "../../components/Sidebar/Sidebar";
 import PageHeader from "../../components/PageHeader/PageHeader";
 import SectionBox from "../../components/SectionBox/SectionBox";
 import ErroBox from "../../components/ErroBox/ErroBox";
@@ -189,9 +187,6 @@ function Transferencia() {
 
     return (
         <Box>
-            <Header />
-            <Sidebar />
-
             <Box
                 component="main"
                 sx={{
