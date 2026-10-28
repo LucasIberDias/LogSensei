@@ -8,6 +8,7 @@ import AssignmentIcon from "@mui/icons-material/Assignment";
 import LocalShippingIcon from "@mui/icons-material/LocalShipping";
 import AddBoxIcon from "@mui/icons-material/AddBox";
 import MenuBookIcon from "@mui/icons-material/MenuBook";
+import SwapHorizIcon from "@mui/icons-material/SwapHoriz";
 
 import SidebarItem from "./SidebarItem";
 import { temPermissao } from "../../services/permissionService";
@@ -64,6 +65,14 @@ function Sidebar() {
                         icon={<MenuBookIcon />}
                         text="Diário"
                         path="/diario"
+                    />
+                )}
+
+                {podeAcessarFilial && (
+                    <SidebarItem
+                        icon={<SwapHorizIcon />}
+                        text="Transferência"
+                        path="/transferencia"
                     />
                 )}
             </List>
