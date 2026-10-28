@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-    baseURL: "https://logsensei.discloud.app/",
+    baseURL: "http://192.168.90.252:8080",
 });
 
 api.interceptors.request.use((config) => {

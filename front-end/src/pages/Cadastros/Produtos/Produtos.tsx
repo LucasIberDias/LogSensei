@@ -5,8 +5,6 @@ import {
     Button,
 } from "@mui/material";
 
-import Header from "../../../components/Header/Header";
-import Sidebar from "../../../components/Sidebar/Sidebar";
 import PageHeader from "../../../components/PageHeader/PageHeader";
 
 import ListaProdutos from "./ListaProdutos";
@@ -18,9 +16,6 @@ function Produtos() {
 
     return (
         <Box>
-            <Header />
-            <Sidebar />
-
             <Box
                 component="main"
                 sx={{

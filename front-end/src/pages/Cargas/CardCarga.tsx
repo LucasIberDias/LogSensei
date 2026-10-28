@@ -91,11 +91,10 @@ function CardCarga({
     return (
         <Card
             sx={{
-                border: "1px solid",
-                borderColor: status.borda,
                 borderRadius: 2,
                 overflow: "hidden",
-                boxShadow: 1,
+                boxShadow: 1
+                
             }}
         >
             <Box
@@ -104,9 +103,7 @@ function CardCarga({
                     alignItems: "center",
                     justifyContent: "space-between",
                     backgroundColor: status.fundo,
-                    padding: 1.5,
-                    borderBottom: "1px solid",
-                    borderColor: status.borda,
+                    padding: 1.5                    
                 }}
             >
                 <Box
