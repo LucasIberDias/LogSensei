@@ -5,6 +5,8 @@ import {
     Button,
 } from "@mui/material";
 
+import Header from "../../../components/Header/Header";
+import Sidebar from "../../../components/Sidebar/Sidebar";
 import PageHeader from "../../../components/PageHeader/PageHeader";
 
 import ListaClientes from "./ListaClientes";
@@ -17,6 +19,10 @@ function Clientes() {
     return (
 
         <Box>
+
+            <Header />
+
+            <Sidebar />
 
             <Box
                 component="main"

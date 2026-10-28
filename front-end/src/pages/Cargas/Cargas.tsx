@@ -16,6 +16,8 @@ import FormCancelarCarga from "./FormCancelarCarga";
 import FormVisualizarCarga from "./FormVisualizarCarga";
 import imprimirCarga from "./ImprimirCarga";
 
+import Header from "../../components/Header/Header";
+import Sidebar from "../../components/Sidebar/Sidebar";
 import PageHeader from "../../components/PageHeader/PageHeader";
 
 type FiltroStatus = | "TODAS" | "PROXIMO" | "PENDENTE" | "ENTREGUE" | "CANCELADA";
@@ -145,6 +147,10 @@ function Cargas() {
 
     return (
         <Box>
+            <Header />
+
+            <Sidebar />
+
             <Box
                 component="main"
                 sx={{
