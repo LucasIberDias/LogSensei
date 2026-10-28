@@ -39,6 +39,8 @@ import PersonRoundedIcon from "@mui/icons-material/PersonRounded";
 import BusinessRoundedIcon from "@mui/icons-material/BusinessRounded";
 import InboxRoundedIcon from "@mui/icons-material/InboxRounded";
 
+import Header from "../../components/Header/Header";
+import Sidebar from "../../components/Sidebar/Sidebar";
 import PageHeader from "../../components/PageHeader/PageHeader";
 import api from "../../services/api";
 
@@ -580,6 +582,10 @@ function Dashboard() {
     if (!autorizado) {
         return (
             <Box>
+                <Header />
+
+                <Sidebar />
+
                 <Box
                     component="main"
                     sx={{
@@ -608,6 +614,10 @@ function Dashboard() {
 
     return (
         <Box>
+            <Header />
+
+            <Sidebar />
+
             <Box
                 component="main"
                 sx={{

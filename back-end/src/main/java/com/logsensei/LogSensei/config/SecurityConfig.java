@@ -64,8 +64,7 @@ public class SecurityConfig {
         configuration.setAllowedOrigins(
             List.of(
                 "http://localhost:5173",
-                "https://logsensei-frontend.discloud.app",
-                "http://192.168.90.252:5173"
+                "https://logsensei-frontend.discloud.app"
             )
         );
 

@@ -10,6 +10,8 @@ import GroupsIcon from "@mui/icons-material/Groups";
 import Inventory2Icon from "@mui/icons-material/Inventory2";
 import DirectionsCarIcon from "@mui/icons-material/DirectionsCar";
 
+import Header from "../../components/Header/Header";
+import Sidebar from "../../components/Sidebar/Sidebar";
 import CardCadastro from "../../components/Cards/CardCadastros";
 import PageHeader from "../../components/PageHeader/PageHeader";
 
@@ -18,6 +20,11 @@ function Cadastros() {
 
     return (
         <Box>
+
+            <Header />
+
+            <Sidebar />
+
             <Box
                 component="main"
                 sx={{
