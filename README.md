@@ -375,4 +375,13 @@ LogSensei/
 
 ---
 
-<p align="center">LogSensei · Gestão logística</p>
+## Autor
+
+**Lucas Iber Dias**, estudante de Análise e Desenvolvimento de Sistemas no IFPR.
+
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-836953?style=flat-square&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/lucasiberdias)
+[![GitHub](https://img.shields.io/badge/GitHub-5D4037?style=flat-square&logo=github&logoColor=white)](https://github.com/LucasIberDias)
+
+---
+
+<p align="center">LogSensei · Gestão Logística</p>
