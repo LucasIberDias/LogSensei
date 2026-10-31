@@ -373,7 +373,6 @@ LogSensei/
 - A autorização por cargo ocorre parcialmente na interface e em regras específicas do backend. A interface, isoladamente, não deve ser considerada uma barreira de segurança.
 - O status calculado ao atualizar a carga depende de motorista, veículo e local de saída; com nota fiscal preenchida, uma carga pronta passa a `ENTREGUE`. O status inicial é `PENDENTE` e o cancelamento define `CANCELADA`.
 
----
 
 ## Autor
 
